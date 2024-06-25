@@ -1,5 +1,5 @@
 #[starknet::interface] :
-trait ILQTYToken { 
+trait IPool { 
     use openzeppelin::token::erc20::{IERC20};
     use starknet::ContractAddress;
     // Functions 
