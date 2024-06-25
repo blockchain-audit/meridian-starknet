@@ -80,43 +80,43 @@ trait IBorrowerOperations {
 
     // --- Functions ---
 
-    function setAddresses(
-        address _troveManagerAddress,
-        address _activePoolAddress,
-        address _defaultPoolAddress,
-        address _stabilityPoolAddress,
-        address _gasPoolAddress,
-        address _collSurplusPoolAddress,
-        address _priceFeedAddress,
-        address _sortedTrovesAddress,
-        address _lusdTokenAddress,
-        address _lqtyStakingAddress
-    ) external;
+    fn setAddresses(
+        troveManagerAddress: felt252,
+        activePoolAddress: felt252,
+        defaultPoolAddress: felt252,
+        stabilityPoolAddress: felt252,
+        gasPoolAddress: felt252,
+        collSurplusPoolAddress: felt252,
+        priceFeedAddress: felt252,
+        sortedTrovesAddress: felt252,
+        lusdTokenAddress: felt252,
+        lqtyStakingAddress: felt252
+    ) ;
 
-    function openTrove(uint256 _maxFee, uint256 _LUSDAmount, address _upperHint, address _lowerHint) external payable;
+    fn openTrove(maxFee: u256, LUSDAmount: u256, upperHint: felt252, lowerHint: felt252);
 
-    function addColl(address _upperHint, address _lowerHint) external payable;
+    fn addColl(upperHint: felt252, lowerHint: felt252);
 
-    function moveETHGainToTrove(address _user, address _upperHint, address _lowerHint) external payable;
+    fn moveETHGainToTrove(user: felt252, upperHint: felt252, lowerHint: felt252);
 
-    function withdrawColl(uint256 _amount, address _upperHint, address _lowerHint) external;
+    fn withdrawColl(amount: u256, upperHint: felt252, lowerHint: felt252);
 
-    function withdrawLUSD(uint256 _maxFee, uint256 _amount, address _upperHint, address _lowerHint) external;
+    fn withdrawLUSD(maxFee: u256, amount: u256, upperHint: felt252, lowerHint: felt252) ;
 
-    function repayLUSD(uint256 _amount, address _upperHint, address _lowerHint) external;
+    fn repayLUSD(amount: u256, upperHint: u256, lowerHint: felt252);
 
-    function closeTrove() external;
+    fn closeTrove();
 
-    function adjustTrove(
-        uint256 _maxFee,
-        uint256 _collWithdrawal,
-        uint256 _debtChange,
-        bool isDebtIncrease,
-        address _upperHint,
-        address _lowerHint
-    ) external payable;
+    fn adjustTrove(
+        maxFee: u256,
+        collWithdrawal: u256,
+        debtChange: u256,
+        isDebtIncrease: bool,
+        upperHint: felt252,
+        lowerHint: felt252
+    );
 
-    function claimCollateral() external;
+    fn claimCollateral();
 
-    function getCompositeDebt(uint256 _debt) external pure returns (uint256);
+    fn getCompositeDebt(debt; u256) -> u256;
 }
