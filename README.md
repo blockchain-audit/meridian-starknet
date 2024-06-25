@@ -14,4 +14,7 @@ secured algorithmically.
 * [chainlink-datafeeds](https://docs.chain.link/data-feeds/starknet) - chainlink datafeeds to get the last starknet native price
 * [chainlink-cairo-example](https://github.com/smartcontractkit/chainlink-starknet/tree/develop/examples/contracts/aggregator_consumer) - example in cairo on how to use the chainlink datafeed
 * [open-zeppelin-cairo](https://github.com/OpenZeppelin/cairo-contracts/tree/main) - cairo also have a full open zeppelin lib
-* [liquity-contracts](https://github.com/liquity/dev/tree/main/packages/contracts/contracts) - meridian is a fork of liquity
+* [liquity-contracts-original](https://github.com/liquity/dev/tree/main/packages/contracts/contracts) - meridian is a fork of liquity
+* [liquity-contracts-annotated](https://github.com/blockchain-audit/liquity-contracts)
+* [solidity-cairo-comparison](https://www.cairo-lang.org/moving-from-solidity-to-cairo/)
+* [cairo-by-example](https://cairo-by-example.com/)
