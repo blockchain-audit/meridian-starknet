@@ -19,7 +19,8 @@ mod LPTokenWrapper {
     struct Storage {
         _totalSupply: u256,
         _balances: LegacyMap::<felt, u256>,
-        uniToken: IERC20
+        // uniToken: IERC20
+        uniTokenAddress := contract_address(IERC20)
     }
 
     #[abi(embed_v0)]
@@ -36,7 +37,8 @@ mod LPTokenWrapper {
             self._totalSupply.write(totalSupply() + amount);
             let sender: felt = get_caller_address();
             self._balances.write(balanceOf(sender) + amount);
-            uniToken.transferFrom(sender, get_contract_address(), amount);
+            // uniToken.transferFrom(sender, get_contract_address(), amount);
+           library_call_IERC20(self.uniTokenAddress.read()).transferFrom(sender, get_contract_address(), amount);
         }
 
         fn withdraw(amount: u256) {
@@ -52,22 +54,22 @@ mod LPTokenWrapper {
 #[starknet::contract]
 mod Unipool {
     #[storage_var]
-    pub duration:u256,
-    pub periodFinish:u256,
-    pub rewardRate:u256,
-    pub lastUpdateTime:u256,
-    pub rewardPerTokenStored:u256,
+    pub duration: u256,
+    pub periodFinish: u256,
+    pub rewardRate: u256,
+    pub lastUpdateTime: u256,
+    pub rewardPerTokenStored: u256,
     pub userRewardPerTokenPaid: Map<felt, u256>,
     pub rewards: Map<felt, u256>
 
     #[event]
     #[derive(Drop, starknet::Event)]
     enum LQTYTokenAddressChanged {
-        _lqtyTokenAddress:felt
+        _lqtyTokenAddress: felt
     }
 
     enum UniTokenAddressChanged {
-        _uniTokenAddress:felt
+        _uniTokenAddress: felt
     }
 
     struct Staked {
@@ -76,13 +78,13 @@ mod Unipool {
         amount: u256,
     }
 
-    struct Withdrawn{
+    struct Withdrawn {
         #[key]
-        user:felt,
-        amount:u256
+        user: felt,
+        amount: u256
     }
 
-    struct RewardPaid{
+    struct RewardPaid {
         #[key]
         user:felt,
         reward:u256
@@ -90,9 +92,10 @@ mod Unipool {
 
     #[abi(embed_v0)]
     impl Unipool of super::IUnipool<ContractState> {
+
         //initialization function
-        fn setParams(_lqtyTokenAddress:felt,_uniTokenAddress:felt,_duration:felt){
-            self.uniToken=
+        fn setParams(_lqtyTokenAddress: felt, _uniTokenAddress: felt, _duration: felt){
+            self.uniToken
         }
     }
 }
