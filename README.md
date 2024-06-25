@@ -15,6 +15,7 @@ secured algorithmically.
 * [chainlink-cairo-example](https://github.com/smartcontractkit/chainlink-starknet/tree/develop/examples/contracts/aggregator_consumer) - example in cairo on how to use the chainlink datafeed
 * [open-zeppelin-cairo](https://github.com/OpenZeppelin/cairo-contracts/tree/main) - cairo also have a full open zeppelin lib
 * [liquity-contracts-original](https://github.com/liquity/dev/tree/main/packages/contracts/contracts) - meridian is a fork of liquity
-* [liquity-contracts-annotated](https://github.com/blockchain-audit/liquity-contracts)
-* [solidity-cairo-comparison](https://www.cairo-lang.org/moving-from-solidity-to-cairo/)
-* [cairo-by-example](https://cairo-by-example.com/)
+* [liquity-contracts-annotated](https://github.com/blockchain-audit/liquity-contracts) - reorganized liquity files
+* [solidity-cairo-comparison](https://www.cairo-lang.org/moving-from-solidity-to-cairo/) - migration tips
+* [cairo-by-example](https://cairo-by-example.com/) - examples
+* [scarb](https://docs.swmansion.com/scarb/docs.html) - scarb docs
