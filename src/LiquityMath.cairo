@@ -91,6 +91,20 @@ mod LiquityMath {
              2 ** 256 - 1;
         }
     }
+
+    fn _computeCR(coll:u256, debt:u256, price:u256)-> u256 {
+       
+        if debt > 0 {
+            newCollRatio:u256 =coll*price/debt; //coll.mul(price).div(debt);        
+            newCollRatio
+        }
+        // Return the maximal value for uint256 if the Trove has a debt of 0. Represents "infinite" CR.
+        else {
+            // if (_debt == 0)
+             2 ** 256 - 1;
+        }
+    }
+
 }
 
 
