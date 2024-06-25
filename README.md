@@ -19,3 +19,12 @@ secured algorithmically.
 * [solidity-cairo-comparison](https://www.cairo-lang.org/moving-from-solidity-to-cairo/) - migration tips
 * [cairo-by-example](https://cairo-by-example.com/) - examples
 * [scarb](https://docs.swmansion.com/scarb/docs.html) - scarb docs
+* [starknet-by-example](https://starknet-by-example.voyager.online/starknet-by-example.html)
+* [nethermind-lib](https://github.com/NethermindEth/cairo_zstd)
+* [starknet-book](https://book.starknet.io/title-page.html)
+
+
+### Projects
+
+* [stark-defi](https://github.com/Starkdefi/StarkDefi/tree/main)
+* [multisig](https://github.com/eqlabs/starknet-multisig/tree/main)
