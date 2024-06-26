@@ -11,6 +11,6 @@ trait IPriceFeed {
      lastGoodPrice: u256
     }
 
-    
+    #[external(v0)]
     fn fetchPrice() -> u256;
 }
