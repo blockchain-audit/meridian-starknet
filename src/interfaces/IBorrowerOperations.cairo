@@ -118,5 +118,5 @@ trait IBorrowerOperations {
 
     fn claimCollateral();
 
-    fn getCompositeDebt(debt; u256) -> u256;
+    fn getCompositeDebt(debt: u256) -> u256;
 }
