@@ -1,3 +1,4 @@
+
 #[starknet::interface] :
 trait ILQTYToken { 
     use openzeppelin::token::erc20::{IERC20};
