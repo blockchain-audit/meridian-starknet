@@ -1,6 +1,6 @@
 
 #[starknet::interface]
-trait ActivePool {
+trait IActivePool {
     #[external(v0)]
     fn sendETH(_account: felt252, _amount: u256);
 
