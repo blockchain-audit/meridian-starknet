@@ -3,29 +3,52 @@ trait IPool {
     use openzeppelin::token::erc20::{IERC20};
     use starknet::ContractAddress;
     // Functions 
-    @external
+    #[external]
     fn getETH()->(felt252);
-    @external
+    #[external]
     fn getLUSDDebt()->(felt252);
-    @external
+    #[external]
     fn increaseLUSDDebt(amount:felt252);
-    @external
+    #[external]
     fn decreaseLUSDDebt(amount:felt252);
 
     //Events
-    @event
-    fn ETHBalanceUpdated(_newBalance:felt252);
-    @event
-    fn LUSDBalanceUpdated(_newBalance:felt252)
-    @event
-    fn ActivePoolAddressChanged(_newActivePoolAddress:felt252)
-    @event
-    fn DefaultPoolAddressChanged(_newDefaultPoolAddress:felt252) 
-    @event
-    fn StabilityPoolAddressChanged(_newStabilityPoolAddress:felt252)
-    @event 
-    fn EtherSent(_toAddress:felt252,amount:felt252 );
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        ETHBalanceUpdated: ETHBalanceUpdated,
+        LUSDBalanceUpdated:LUSDBalanceUpdated,
+        ActivePoolAddressChanged:ActivePoolAddressChanged,
+        DefaultPoolAddressChanged:DefaultPoolAddressChanged,
+        StabilityPoolAddressChanged:StabilityPoolAddressChanged,
+        EtherSent:EtherSent,
     }
+    #[derive(Drop, starknet::Event)]
+    struct ETHBalanceUpdated{
+        _newBalance: felt252,
+    }
+    #[derive(Drop, starknet::Event)]
+    struct LUSDBalanceUpdated{
+        _newBalance: felt252,
+    }
+    #[derive(Drop, starknet::Event)]
+    struct ActivePoolAddressChanged{
+        _newActivePoolAddress: felt252,
+    }
+    #[derive(Drop, starknet::Event)]
+    struct DefaultPoolAddressChanged{
+        _newDefaultPoolAddress: felt252,
+    }
+    #[derive(Drop, starknet::Event)]
+    struct StabilityPoolAddressChanged{
+        _newStabilityPoolAddress: felt252,
+    }
+    #[derive(Drop, starknet::Event)]
+    struct EtherSent{
+        _toAddress: felt252,
+        amount:felt252,
+    }
+}
 
 
 
