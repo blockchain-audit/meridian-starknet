@@ -1,7 +1,7 @@
 #[starknet::interface]
 trait ILPTokenWrapper<TContractState> {
-    fn stake(amount: u256);
-    fn withdraw(amount: u256);
-    fn totalSupply() -> u256;
-    fn balanceOf(account: felt) -> u256;
+    fn totalSupply(self: TContractState) -> u256;
+    fn balanceOf(self: TContractState, account: felt252) -> u256;
+    fn stake(ref self: TContractState, amount: u256);
+    fn withdraw(ref self: TContractState, amount: u256);
 }
