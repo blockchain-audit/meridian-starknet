@@ -58,22 +58,13 @@ mod LPTokenWrapper {
 #[starknet::contract]
 mod Unipool of super::IUnipool<ContractState> {
 
-
     #[storage_var]
-<<<<<<< HEAD:src/LPRewrds/Unipool.cairo
     pub duration:u256,
     pub lqtyToken:ILQTYToken,
     pub periodFinish:u256,
     pub rewardRate:u256,
     pub lastUpdateTime:u256,
     pub rewardPerTokenStored:u256,
-=======
-    pub duration: u256,
-    pub periodFinish: u256,
-    pub rewardRate: u256,
-    pub lastUpdateTime: u256,
-    pub rewardPerTokenStored: u256,
->>>>>>> 8ab3a084052abf148ab65d6856a9da81b713029c:src/pool/rewards_pool.cairo
     pub userRewardPerTokenPaid: Map<felt, u256>,
     pub rewards: Map<felt, u256>
 
@@ -109,16 +100,10 @@ mod Unipool of super::IUnipool<ContractState> {
     impl Unipool of super::IUnipool<ContractState> {
 
         //initialization function
-<<<<<<< HEAD:src/LPRewrds/Unipool.cairo
         fn setParams(_lqtyTokenAddress:felt,_uniTokenAddress:felt,_duration:felt){
             self.uniToken.write(IERC20(_uniTokenAddress));
             self.lqtyToken.write(IERC20(_lqtyTokenAddress));
 
-
-=======
-        fn setParams(_lqtyTokenAddress: felt, _uniTokenAddress: felt, _duration: felt){
-            self.uniToken
->>>>>>> 8ab3a084052abf148ab65d6856a9da81b713029c:src/pool/rewards_pool.cairo
         }
     }
 }
