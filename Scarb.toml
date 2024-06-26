@@ -38,4 +38,7 @@ sierra = true
 [scripts]
 test = "snforge test"
 
+<<<<<<< HEAD
 >>>>>>> 79cc4af (install openzeppelin)
+=======
+>>>>>>> 146ff77 (start the project)
