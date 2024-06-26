@@ -5,8 +5,6 @@ fn _adjustTrove(address_borrower: ContractAddress, _collWithdrawal: u256, _LUSDC
     'Hello, world!'.print();
 }
 
-
-
 fn main() {
     'Hello, world!'.print();
 }
