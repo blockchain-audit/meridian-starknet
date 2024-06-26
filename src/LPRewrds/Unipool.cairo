@@ -2,7 +2,9 @@ use openzeppelin::token::erc20::{IERC20};
 
 use starknet::ContractAddress;
 
-use interfaces::{ILPTokenWrapper};
+use interfaces::{ILPTokenWrapper,IUnipool};
+
+use ../interfaces::{ILQTYToken};
 
 #[starknet::interface]
 trait Event<T> {
@@ -50,9 +52,12 @@ mod LPTokenWrapper {
 
 
 #[starknet::contract]
-mod Unipool {
+mod Unipool of super::IUnipool<ContractState> {
+
+
     #[storage_var]
     pub duration:u256,
+    pub lqtyToken:ILQTYToken,
     pub periodFinish:u256,
     pub rewardRate:u256,
     pub lastUpdateTime:u256,
@@ -92,7 +97,10 @@ mod Unipool {
     impl Unipool of super::IUnipool<ContractState> {
         //initialization function
         fn setParams(_lqtyTokenAddress:felt,_uniTokenAddress:felt,_duration:felt){
-            self.uniToken=
+            self.uniToken.write(IERC20(_uniTokenAddress));
+            self.lqtyToken.write(IERC20(_lqtyTokenAddress));
+
+
         }
     }
 }
