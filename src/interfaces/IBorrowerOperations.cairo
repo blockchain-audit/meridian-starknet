@@ -1,9 +1,7 @@
+use starknet::ContractAddress;
 #[starknet::interface]
 
-trait IBorrowerOperations {
-
-    //-- events --
-    
+trait IBorrowerOperations<TContractState> {
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
@@ -23,54 +21,54 @@ trait IBorrowerOperations {
     }
     #[derive(Drop, starknet::Event)]
     struct TroveManagerAddressChanged {
-        newTroveManagerAddress: felt252
+        newTroveManagerAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct ActivePoolAddressChanged{
-        activePoolAddress: felt252
+        activePoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct DefaultPoolAddressChanged{
-        defaultPoolAddress: felt252
+        defaultPoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct StabilityPoolAddressChanged{
-        stabilityPoolAddress: felt252
+        stabilityPoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct GasPoolAddressChanged {
-        gasPoolAddress: felt252
+        gasPoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct CollSurplusPoolAddressChanged{
-        collSurplusPoolAddress: felt252
+        collSurplusPoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct PriceFeedAddressChanged{
-        newPriceFeedAddress: felt252
+        newPriceFeedAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct SortedTrovesAddressChanged{
-        sortedTrovesAddress: felt252
+        sortedTrovesAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct LUSDTokenAddressChanged {
-        lusdTokenAddress: felt252
+        lusdTokenAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct LQTYStakingAddressChanged {
-        lqtyStakingAddress: felt252
+        lqtyStakingAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
     struct TroveCreated {
         #[key]
-        borrower: felt252,
+        borrower: ContractAddress,
         arrayIndex: u256
     }
     #[derive(Drop, starknet::Event)]
     struct TroveUpdated {
         #[key]
-        borrower: felt252,
+        borrower: ContractAddress,
         debt: u256,
         coll: u256,
         stake: u256,
@@ -79,61 +77,51 @@ trait IBorrowerOperations {
     #[derive(Drop, starknet::Event)]
     struct LUSDBorrowingFeePaid {
         #[key]
-        borrower: felt252,
+        borrower: ContractAddress,
         LUSDFee: u256
     }
 
 
     // --- Functions ---
 
-    #[external(v0)]
     fn setAddresses(
-        troveManagerAddress: felt252,
-        activePoolAddress: felt252,
-        defaultPoolAddress: felt252,
-        stabilityPoolAddress: felt252,
-        gasPoolAddress: felt252,
-        collSurplusPoolAddress: felt252,
-        priceFeedAddress: felt252,
-        sortedTrovesAddress: felt252,
-        lusdTokenAddress: felt252,
-        lqtyStakingAddress: felt252
+        troveManagerAddress: ContractAddress,
+        activePoolAddress: ContractAddress,
+        defaultPoolAddress: ContractAddress,
+        stabilityPoolAddress: ContractAddress,
+        gasPoolAddress: ContractAddress,
+        collSurplusPoolAddress: ContractAddress,
+        priceFeedAddress: ContractAddress,
+        sortedTrovesAddress: ContractAddress,
+        lusdTokenAddress: ContractAddress,
+        lqtyStakingAddress: ContractAddress
     ) ;
-    
-    #[external(v0)]
-    fn openTrove(maxFee: u256, LUSDAmount: u256, upperHint: felt252, lowerHint: felt252);
 
-    #[external(v0)]
-    fn addColl(upperHint: felt252, lowerHint: felt252);
+    fn openTrove(ref self: TContractState, maxFee: u256, LUSDAmount: u256, upperHint: ContractAddress, lowerHint: ContractAddress);
 
-    #[external(v0)]
-    fn moveETHGainToTrove(user: felt252, upperHint: felt252, lowerHint: felt252);
+    fn addColl(ref self: TContractState, upperHint: ContractAddress, lowerHint: ContractAddress);
 
-    #[external(v0)]
-    fn withdrawColl(amount: u256, upperHint: felt252, lowerHint: felt252);
+    fn moveETHGainToTrove(ref self: TContractState, user: ContractAddress, upperHint: ContractAddress, lowerHint: ContractAddress);
 
-    #[external(v0)]
-    fn withdrawLUSD(maxFee: u256, amount: u256, upperHint: felt252, lowerHint: felt252) ;
+    fn withdrawColl(ref self: TContractState, amount: u256, upperHint: ContractAddress, lowerHint: ContractAddress);
 
-    #[external(v0)]
-    fn repayLUSD(amount: u256, upperHint: u256, lowerHint: felt252);
+    fn withdrawLUSD(ref self: TContractState, maxFee: u256, amount: u256, upperHint: ContractAddress, lowerHint: ContractAddress) ;
 
-    #[external(v0)]
-    fn closeTrove();
+    fn repayLUSD(ref self: TContractState, amount: u256, upperHint: u256, lowerHint: ContractAddress);
 
-    #[external(v0)]
+    fn closeTrove(ref self: TContractState);
+
     fn adjustTrove(
+        ref self: TContractState,
         maxFee: u256,
         collWithdrawal: u256,
         debtChange: u256,
         isDebtIncrease: bool,
-        upperHint: felt252,
-        lowerHint: felt252
+        upperHint: ContractAddress,
+        lowerHint: ContractAddress
     );
 
-    #[external(v0)]
-    fn claimCollateral();
+    fn claimCollateral(ref self: TContractState);
 
-    #[external(v0)]
-    fn getCompositeDebt(debt: u256) -> u256;
+    fn getCompositeDebt(ref self: TContractState, debt: u256) -> u256;
 }
