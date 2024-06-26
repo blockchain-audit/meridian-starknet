@@ -1,6 +1,7 @@
 use debug::PrintTrait;
+use starknet::ContractAddress;
 
-fn _adjustTrove(felt252: address_borrower, u256: _collWithdrawal, u256: _LUSDChange, _isDebtIncrease: bool, _upperHint: felt252, _lowerHint: felt252, _maxFeePercentage:u256){
+fn _adjustTrove(address_borrower: ContractAddress, _collWithdrawal: u256, _LUSDChange: u256, _isDebtIncrease: bool, _upperHint: ContractAddress, _lowerHint: ContractAddress, _maxFeePercentage: u256){
     'Hello, world!'.print();
 }
 
@@ -8,5 +9,4 @@ fn _adjustTrove(felt252: address_borrower, u256: _collWithdrawal, u256: _LUSDCha
 
 fn main() {
     'Hello, world!'.print();
-    _adjustTrove();
 }
