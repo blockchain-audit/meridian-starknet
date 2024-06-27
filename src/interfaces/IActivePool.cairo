@@ -2,7 +2,7 @@
 #[starknet::interface]
 trait IActivePool {
     #[external(v0)]
-    fn sendETH(_account: felt252, _amount: u256);
+    fn sendSTARK(_account: felt252, _amount: u256);
 
     #[event(v0)]
     fn BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress: felt252);
