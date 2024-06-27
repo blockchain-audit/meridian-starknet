@@ -1,6 +1,6 @@
 #[starknet::contract]
 mod BorrowerOperations {
-use starknet::{ContractAddress,get_caller_address};
+    use starknet::{ContractAddress, get_caller_address};
     #[derive(Copy, Drop)]
     struct LocalVariables_adjustTrove {
         price: u256,
@@ -43,10 +43,9 @@ use starknet::{ContractAddress,get_caller_address};
         adjustTrove
     }
 
-#[external]
+    #[external]
     fn claimCollateral() {
         let caller = get_caller_address();
         collSurplusPool.claimColl(caller);
     }
-    
 }
