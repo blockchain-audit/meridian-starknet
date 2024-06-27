@@ -154,7 +154,12 @@ mod BorrowerOperations {
     fn _requireNotInRecoveryMode(){}
     fn _requireValidAdjustmentInCurrentMode(){}
     fn _requireNoCollWithdrawal(){}
-    fn _requireValidLUSDRepayment(){}
+    fn _requireValidLUSDRepayment(currentDebt:u256, debtRepayment:u256){
+            assert(
+                debtRepayment <= currentDebt.sub(LUSD_GAS_COMPENSATION),
+                'BorrowerOps: Amount repaid must not be larger than the Troves debt'
+            );
+    }
     fn _requireAtLeastMinNetDebt(){}
     fn _requireNewTCRisAboveCCR(){}
     fn _requireNewICRisAboveOldICR(){}
