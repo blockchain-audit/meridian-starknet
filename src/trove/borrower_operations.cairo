@@ -183,6 +183,10 @@ mod BorrowerOperations {
     fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
         assert(_newICR >= oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
+    #[view]
+    fn _requireCallerIsBorrower( borrower: ContractAddress) {
+    assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
+    }
 
     fn _requireAtLeastMinNetDebt(const netDebt: u256)  {
         assert(netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum");
