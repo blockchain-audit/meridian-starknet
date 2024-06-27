@@ -1,6 +1,5 @@
-#[starknet::contract] 
 use starknet::ContractAddress;
-impl LUSDTokenAddressChangedDrop of Drop::<LUSDTokenAddressChanged
+#[starknet::contract] 
 mod EventsTroveManager{
 
     enum TroveManagerOperation {

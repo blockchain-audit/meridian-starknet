@@ -1,7 +1,7 @@
 #[starknet::contract] 
 use array::ArrayTrait;
 use starknet::ContractAddress;
-mod TroveManager { 
+mod StructTroveManager { 
     ///Structs
     #[storage] 
     struct Trove {
