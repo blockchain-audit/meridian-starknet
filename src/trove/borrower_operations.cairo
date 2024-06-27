@@ -154,6 +154,7 @@ mod BorrowerOperations {
     fn _requireNotInRecoveryMode(){}
     fn _requireValidAdjustmentInCurrentMode(){}
     fn _requireNoCollWithdrawal(){}
+
     fn _requireValidLUSDRepayment(currentDebt:u256, debtRepayment:u256){
         assert(debtRepayment <= currentDebt.sub(LUSD_GAS_COMPENSATION),
                 'BorrowerOps: Amount repaid must not be larger than the Troves debt');
@@ -161,6 +162,10 @@ mod BorrowerOperations {
     fn _requireAtLeastMinNetDebt(const newICR: u256, const oldICR:u256){
         assert(newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
+
+    fn _requireValidLUSDRepayment(){}
+    fn _requireAtLeastMinNetDebt(){}
+
     fn _requireNewTCRisAboveCCR(){}
     fn _requireNewICRisAboveOldICR(){}
     fn _requireICRisAboveCCR(){}
@@ -174,8 +179,17 @@ mod BorrowerOperations {
     fn _getNewNominalICRFromTroveChange(){}
     fn getCompositeDebt(){}
 
-    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256) internal pure {
-        assert(_newICR >= _oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+
+    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
+        assert(_newICR >= oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+    }
+
+    fn _requireAtLeastMinNetDebt(const netDebt: u256)  {
+        assert(netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum");
+    }
+    #[view]
+    fn _requireSingularCollChange(const collWithdrawal: u256) {
+    assert(msg.value == 0 || collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
     }
 
 
