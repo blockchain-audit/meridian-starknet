@@ -1,5 +1,6 @@
 #[starknet::contract] 
 use starknet::ContractAddress;
+mod StructsTroveManager{
 #[event]
 #[derive(Drop, starknet::Event)]
     enum TroveManagerOperation {
@@ -141,4 +142,4 @@ use starknet::ContractAddress;
         _borrower:ContractAddress,
         _newIndex:felt252,
     }
-  
+  }
