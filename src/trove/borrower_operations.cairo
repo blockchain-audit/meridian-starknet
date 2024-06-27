@@ -191,7 +191,15 @@ mod BorrowerOperations {
     fn _requireSingularCollChange(const collWithdrawal: u256) {
     assert(msg.value == 0 || collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
     }
+    #[view]
+fn _requireCallerIsBorrower( borrower: ContractAddress) {
+assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
+}
 
+#[view]
+fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
+assert(msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,"BorrowerOps: There must be either a collateral change or a debt change");
+}
 
     fn main() {}
 
