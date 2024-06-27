@@ -174,7 +174,9 @@ mod BorrowerOperations {
     fn _getNewNominalICRFromTroveChange(){}
     fn getCompositeDebt(){}
 
-
+    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256) internal pure {
+        assert(_newICR >= _oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+    }
 
 
     fn main() {}
