@@ -1,6 +1,6 @@
 #[starknet::contract] 
 use starknet::ContractAddress;
-mod StructsTroveManager{
+mod EventsTroveManager{
 #[event]
 #[derive(Drop, starknet::Event)]
     enum TroveManagerOperation {
