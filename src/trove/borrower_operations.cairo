@@ -174,10 +174,17 @@ mod BorrowerOperations {
     fn _getNewNominalICRFromTroveChange(){}
     fn getCompositeDebt(){}
 
-    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256) internal pure {
-        assert(_newICR >= _oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
+        assert(_newICR >= oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
 
+    fn _requireAtLeastMinNetDebt(const netDebt: u256)  {
+        assert(netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum");
+    }
+    #[view]
+    fn _requireSingularCollChange(const collWithdrawal: u256) {
+    assert(msg.value == 0 || collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
+    }
 
     fn main() {}
 
