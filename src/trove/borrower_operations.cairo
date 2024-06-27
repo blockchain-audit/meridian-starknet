@@ -174,8 +174,12 @@ mod BorrowerOperations {
     fn _getNewNominalICRFromTroveChange(){}
     fn getCompositeDebt(){}
 
-    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256) internal pure {
+    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
         assert(_newICR >= _oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+    }
+
+    fn _requireAtLeastMinNetDebt(const _netDebt: u256)  {
+        assert(_netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum");
     }
 
 
