@@ -184,10 +184,7 @@ assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a w
 
 #[view]
 fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
-assert(
-msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,
-"BorrowerOps: There must be either a collateral change or a debt change"
-);
+assert(msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,"BorrowerOps: There must be either a collateral change or a debt change");
 }
 
     fn main() {}
