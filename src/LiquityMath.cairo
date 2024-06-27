@@ -41,46 +41,43 @@ mod LiquityMath {
     }
 
     #[generate_trait]
-    fn _decPow(base:u256, mut minutes:u256) -> u256 {
-        if minutes > 525600000{
-            minutes = 525600000;
-        }    
-        if minutes == 0 {
-            //DECIMAL_PRECISION
-            let dec: u256 = DECIMAL_PRECISION;  
-            dec
+    fn _decPow( _base: u256, mut _minutes: u256)->u256{
+
+        let MAX_MINUTES: u256 = 525600000;
+        let mut result: u256 = DECIMAL_PRECISION;
+    
+        if _minutes > MAX_MINUTES {   
+            _minutes = MAX_MINUTES;
         }
-        else {
-        let mut y: u256 = DECIMAL_PRECISION;
-        let mut x: u256 = base;
-        let mut n: u256 = minutes;
+        if _minutes == 0 {
+            result
+        }
+        else {     
+            let mut base:  u256 = _base;
+            let mut exp: u256  = _minutes;
+        
+            loop {
+                if exp <= 1 {
+                    break();
+                }
+                if ( exp % 2 != 0){
+                   result = decMul(base, result);
+                   exp = exp - 1;
+                }
+                base = decMul(base, base);
+                exp /= 2;
+            };
 
-        let mut i:u256=0;
-
-        loop {   
-            if n > 1 {    
-                break();
-            }
-            let n2: u256 = n % 2;
-
-            if n2 == 0 { // if n % 2 == 0
-                x = decMul(x, x);
-                n = n / 2; // n = n.div(2);
-            } else {
-                 y = decMul(x,y);
-                 x = decMul(x,x);
-                 n = (n-1) / 2;//(n.sub(1)).div(2);
-            }
-        };      
-
-        decMul(x, y)
+            decMul(base, result)
+        }
     }
-   }
+    
 
    #[generate_trait]
    fn _getAbsoluteDifference(a: u256, b: u256) -> u256 {
         if a >= b {
-            a - b // a.sub(b)
+            a - b 
+            // a.sub(b)
         }
         else{ 
             b - a //b.sub(a)
