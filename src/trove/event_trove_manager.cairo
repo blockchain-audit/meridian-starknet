@@ -9,7 +9,33 @@ mod EventsTroveManager{
             liquidateInRecoveryMode:liquidateInRecoveryMode,
             redeemCollateral:redeemCollateral,
         }
-
+        #[event]
+        #[derive(Drop, starknet::Event)]
+    enum Event {
+        BorrowerOperationsAddressChanged: BorrowerOperationsAddressChanged,
+            PriceFeedAddressChanged:PriceFeedAddressChanged,
+            LUSDTokenAddressChanged:LUSDTokenAddressChanged,
+            ActivePoolAddressChanged:ActivePoolAddressChanged,
+            DefaultPoolAddressChanged:DefaultPoolAddressChanged,
+            StabilityPoolAddressChanged:StabilityPoolAddressChanged,
+            GasPoolAddressChanged:GasPoolAddressChanged,
+            CollSurplusPoolAddressChanged:CollSurplusPoolAddressChanged,
+            SortedTrovesAddressChanged:SortedTrovesAddressChanged,
+            LQTYTokenAddressChanged:LQTYTokenAddressChanged,
+            LQTYStakingAddressChanged:LQTYStakingAddressChanged,
+            Liquidation:Liquidation,
+            Redemption:Redemption,
+            TroveUpdated:TroveUpdated,
+            LastFeeOpTimeUpdated:LastFeeOpTimeUpdated,
+            BaseRateUpdated:BaseRateUpdated,
+            TroveLiquidated:TroveLiquidated,
+            SystemSnapshotsUpdated:SystemSnapshotsUpdated,
+            TotalStakesUpdated:TotalStakesUpdated,
+            TroveSnapshotsUpdated:TroveSnapshotsUpdated,
+            LTermsUpdated:LTermsUpdated,
+        TroveIndexUpdated:TroveIndexUpdated,
+            
+        }
     #[derive(Drop, starknet::Event)]
     struct BorrowerOperationsAddressChanged{
         _newBorrowerOperationsAddress: ContractAddress,
@@ -118,32 +144,6 @@ mod EventsTroveManager{
         _borrower:ContractAddress,
         _newIndex:felt252,
     }
-    #[event]
-    #[derive(Drop, starknet::Event)]
-    enum Event {
-        BorrowerOperationsAddressChanged: BorrowerOperationsAddressChanged,
-        PriceFeedAddressChanged:PriceFeedAddressChanged,
-        LUSDTokenAddressChanged:LUSDTokenAddressChanged,
-        ActivePoolAddressChanged:ActivePoolAddressChanged,
-        DefaultPoolAddressChanged:DefaultPoolAddressChanged,
-        StabilityPoolAddressChanged:StabilityPoolAddressChanged,
-        GasPoolAddressChanged:GasPoolAddressChanged,
-        CollSurplusPoolAddressChanged:CollSurplusPoolAddressChanged,
-        SortedTrovesAddressChanged:SortedTrovesAddressChanged,
-        LQTYTokenAddressChanged:LQTYTokenAddressChanged,
-        LQTYStakingAddressChanged:LQTYStakingAddressChanged,
-        Liquidation:Liquidation,
-        Redemption:Redemption,
-        TroveUpdated:TroveUpdated,
-        LastFeeOpTimeUpdated:LastFeeOpTimeUpdated,
-        BaseRateUpdated:BaseRateUpdated,
-        TroveLiquidated:TroveLiquidated,
-        SystemSnapshotsUpdated:SystemSnapshotsUpdated,
-        TotalStakesUpdated:TotalStakesUpdated,
-        TroveSnapshotsUpdated:TroveSnapshotsUpdated,
-        LTermsUpdated:LTermsUpdated,
-        TroveIndexUpdated:TroveIndexUpdated,
-        
-    }
+   
 }
   
