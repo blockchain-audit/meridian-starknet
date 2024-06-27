@@ -12,10 +12,10 @@ mod TroveManager {
         //צריך לבדוק ססטוס 
         // Status status;
     }
-    //   Object containing the ETH and LUSD snapshots for a given active trove
+    //   Object containing the STARK and LUSD snapshots for a given active trove
     #[storage] 
     struct RewardSnapshot {
-        ETH :felt252,
+        STARK :felt252,
         LUSDDebt:felt252,
     }
     #[storage] 
@@ -80,9 +80,9 @@ mod TroveManager {
     struct RedemptionTotals {
         remainingLUSD: felt252,
         totalLUSDToRedeem: felt252,
-        totalETHDrawn: felt252,
-        ETHFee: felt252,
-        ETHToSendToRedeemer: felt252,
+        totalSTARKDrawn: felt252,
+        STARKFee: felt252,
+        STARKToSendToRedeemer: felt252,
         decayedBaseRate: felt252,
         price: felt252,
         totalLUSDSupplyAtStart: felt252,
@@ -90,7 +90,7 @@ mod TroveManager {
     #[storage] 
     struct SingleRedemptionValues {
         LUSDLot:felt252,
-        ETHLot :felt252,
+        STARKLot :felt252,
         cancelledPartial:bool,
     }
 }

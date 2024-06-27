@@ -1,38 +1,15 @@
 #[starknet::contract] 
 use starknet::ContractAddress;
-#[event]
-#[derive(Drop, starknet::Event)]
+impl LUSDTokenAddressChangedDrop of Drop::<LUSDTokenAddressChanged
+mod EventsTroveManager{
+
     enum TroveManagerOperation {
             applyPendingRewards:applyPendingRewards,
             liquidateInNormalMode:liquidateInNormalMode,
             liquidateInRecoveryMode:liquidateInRecoveryMode,
             redeemCollateral:redeemCollateral,
         }
-    enum Event {
-        BorrowerOperationsAddressChanged: BorrowerOperationsAddressChanged,
-        PriceFeedAddressChanged:PriceFeedAddressChanged,
-        LUSDTokenAddressChanged:LUSDTokenAddressChanged,
-        ActivePoolAddressChanged:ActivePoolAddressChanged,
-        DefaultPoolAddressChanged:DefaultPoolAddressChanged,
-        StabilityPoolAddressChanged:StabilityPoolAddressChanged,
-        GasPoolAddressChanged:GasPoolAddressChanged,
-        CollSurplusPoolAddressChanged:CollSurplusPoolAddressChanged,
-        SortedTrovesAddressChanged:SortedTrovesAddressChanged,
-        LQTYTokenAddressChanged:LQTYTokenAddressChanged,
-        LQTYStakingAddressChanged:LQTYStakingAddressChanged,
-        Liquidation:Liquidation,
-        Redemption:Redemption,
-        TroveUpdated:TroveUpdated,
-        LastFeeOpTimeUpdated:LastFeeOpTimeUpdated,
-        BaseRateUpdated:BaseRateUpdated,
-        TroveLiquidated:TroveLiquidated,
-        SystemSnapshotsUpdated:SystemSnapshotsUpdated,
-        TotalStakesUpdated:TotalStakesUpdated,
-        TroveSnapshotsUpdated:TroveSnapshotsUpdated,
-        LTermsUpdated:LTermsUpdated,
-        TroveIndexUpdated:TroveIndexUpdated,
-        
-    }
+
     #[derive(Drop, starknet::Event)]
     struct BorrowerOperationsAddressChanged{
         _newBorrowerOperationsAddress: ContractAddress,
@@ -88,12 +65,12 @@ use starknet::ContractAddress;
     struct Redemption{
         _attemptedLUSDAmount: felt252,
         _actualLUSDAmount:felt252,
-        _ETHSent:felt252,
-        _ETHFee:felt252,
+        _STARKSent:felt252,
+        _STARKFee:felt252,
     }
     #[derive(Drop, starknet::Event)]
     struct TroveUpdated{
-        indexed _borrower: ContractAddress,
+        indexed_borrower: ContractAddress,
         _debt:felt252,
         _coll:felt252,
         _stake:felt252,
@@ -102,7 +79,7 @@ use starknet::ContractAddress;
     }
     #[derive(Drop, starknet::Event)]
     struct TroveLiquidated{
-        indexed _borrower: ContractAddress,
+        indexed_borrower: ContractAddress,
         _debt:felt252,
         _coll:felt252,
         //check
@@ -127,13 +104,13 @@ use starknet::ContractAddress;
     }
     #[derive(Drop, starknet::Event)]
     struct LTermsUpdated{
-        _L_ETH:felt252,
+        _L_STARK:felt252,
         _L_LUSDDebt:felt252,
     }
     #[derive(Drop, starknet::Event)]
     //אותם משתנים רק שם האירוע שונה 
     struct TroveSnapshotsUpdated{
-        _L_ETH:felt252,
+        _L_STARK:felt252,
         _L_LUSDDebt:felt252,
     }
     #[derive(Drop, starknet::Event)]
@@ -141,4 +118,32 @@ use starknet::ContractAddress;
         _borrower:ContractAddress,
         _newIndex:felt252,
     }
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        BorrowerOperationsAddressChanged: BorrowerOperationsAddressChanged,
+        PriceFeedAddressChanged:PriceFeedAddressChanged,
+        LUSDTokenAddressChanged:LUSDTokenAddressChanged,
+        ActivePoolAddressChanged:ActivePoolAddressChanged,
+        DefaultPoolAddressChanged:DefaultPoolAddressChanged,
+        StabilityPoolAddressChanged:StabilityPoolAddressChanged,
+        GasPoolAddressChanged:GasPoolAddressChanged,
+        CollSurplusPoolAddressChanged:CollSurplusPoolAddressChanged,
+        SortedTrovesAddressChanged:SortedTrovesAddressChanged,
+        LQTYTokenAddressChanged:LQTYTokenAddressChanged,
+        LQTYStakingAddressChanged:LQTYStakingAddressChanged,
+        Liquidation:Liquidation,
+        Redemption:Redemption,
+        TroveUpdated:TroveUpdated,
+        LastFeeOpTimeUpdated:LastFeeOpTimeUpdated,
+        BaseRateUpdated:BaseRateUpdated,
+        TroveLiquidated:TroveLiquidated,
+        SystemSnapshotsUpdated:SystemSnapshotsUpdated,
+        TotalStakesUpdated:TotalStakesUpdated,
+        TroveSnapshotsUpdated:TroveSnapshotsUpdated,
+        LTermsUpdated:LTermsUpdated,
+        TroveIndexUpdated:TroveIndexUpdated,
+        
+    }
+}
   
