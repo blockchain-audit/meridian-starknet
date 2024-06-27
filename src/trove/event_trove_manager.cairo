@@ -10,7 +10,7 @@ mod EventsTroveManager{
         }
         #[event]
         #[derive(Drop, starknet::Event)]
-       enum Event {
+        enum Event {
         BorrowerOperationsAddressChanged: BorrowerOperationsAddressChanged,
             PriceFeedAddressChanged:PriceFeedAddressChanged,
             LUSDTokenAddressChanged:LUSDTokenAddressChanged,
