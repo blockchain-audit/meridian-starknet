@@ -177,7 +177,18 @@ mod BorrowerOperations {
     fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256) internal pure {
         assert(_newICR >= _oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
+    #[view]
+fn _requireCallerIsBorrower( borrower: ContractAddress) {
+assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
+}
 
+#[view]
+fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
+assert(
+msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,
+"BorrowerOps: There must be either a collateral change or a debt change"
+);
+}
 
     fn main() {}
 
