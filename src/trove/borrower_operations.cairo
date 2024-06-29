@@ -165,6 +165,44 @@ mod BorrowerOperations {
         assert(newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
 
+    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
+        assert(_newICR >= oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+    }
+
+    fn _requireAtLeastMinNetDebt(const netDebt: u256)  {
+        assert(netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum");
+    }
+
+    #[view]
+    fn _requireSingularCollChange(const collWithdrawal: u256) {
+        assert(msg.value == 0 || collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
+    }
+
+    #[view]
+    fn _requireCallerIsBorrower( borrower: ContractAddress) {
+        assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
+    }
+
+    #[view]
+    fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
+        assert(
+            msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,
+            "BorrowerOps: There must be either a collateral change or a debt change"
+        );
+    }
+
+    #[view]
+    fn _requireTroveisActive(ITroveManager troveManager, address borrower) internal view {
+        status: u256 = troveManager.getTroveStatus(borrower);
+        assert(status == 1, "BorrowerOps: Trove does not exist or is closed");
+    }
+
+    #[view]
+    function _requireTroveisNotActive(ITroveManager _troveManager, address _borrower) internal view {
+        status:u256 = _troveManager.getTroveStatus(_borrower);
+        assert(status != 1, "BorrowerOps: Trove is active");
+    }
+
     fn _requireValidLUSDRepayment() {}
     fn _requireAtLeastMinNetDebt() {}
 
@@ -180,8 +218,7 @@ mod BorrowerOperations {
     fn _getNewICRFromTroveChange() {}
     fn _getNewNominalICRFromTroveChange() {}
     fn getCompositeDebt() {}
-
-
+    
     fn _requireNewICRisAboveOldICR(newICR: u256, oldICR: u256) {
         assert(_newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
