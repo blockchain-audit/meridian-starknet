@@ -1,8 +1,8 @@
 use starknet::ContractAddress;
 
+
 #[starknet::contract]
 mod BorrowerOperations {
-
     #[derive(Copy, Drop)]
     struct LocalVariables_adjustTrove {
         price: u256,
@@ -48,7 +48,7 @@ mod BorrowerOperations {
 
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event{
+    enum Event {
         TroveManagerAddressChanged: TroveManagerAddressChanged,
         ActivePoolAddressChanged: ActivePoolAddressChanged,
         DefaultPoolAddressChanged: DefaultPoolAddressChanged,
@@ -65,114 +65,105 @@ mod BorrowerOperations {
     }
 
     #[derive(Drop, starknet::Event)]
-    struct TroveManagerAddressChanged{
+    struct TroveManagerAddressChanged {
         newTroveManagerAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
-    struct ActivePoolAddressChanged{
+    struct ActivePoolAddressChanged {
         activePoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
-    struct DefaultPoolAddressChanged{
+    struct DefaultPoolAddressChanged {
         defaultPoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
-    struct StabilityPoolAddressChanged{
+    struct StabilityPoolAddressChanged {
         stabilityPoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
-    struct GasPoolAddressChanged{
+    struct GasPoolAddressChanged {
         gasPoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
-    struct CollSurplusPoolAddressChanged{
+    struct CollSurplusPoolAddressChanged {
         collSurplusPoolAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
-    struct PriceFeedAddressChanged{
+    struct PriceFeedAddressChanged {
         newPriceFeedAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
-    struct SortedTrovesAddressChanged{
+    struct SortedTrovesAddressChanged {
         sortedTrovesAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
-    struct LUSDTokenAddressChanged{
+    struct LUSDTokenAddressChanged {
         lusdTokenAddress: ContractAddress
     }
     #[derive(Drop, starknet::Event)]
-    struct LQTYStakingAddressChanged{
+    struct LQTYStakingAddressChanged {
         lqtyStakingAddress: ContractAddress
     }
 
     #[derive(Drop, starknet::Event)]
-    struct TroveCreated{
+    struct TroveCreated {
         #[key]
         borrower: ContractAddress,
         arrayIndex: u256
     }
 
     #[derive(Drop, starknet::Event)]
-    struct TroveUpdated{
+    struct TroveUpdated {
         #[key]
-        borrower: ContractAddress, 
-        debt: u256, 
+        borrower: ContractAddress,
+        debt: u256,
         coll: u256,
         stake: u256,
-        operation: BorrowerOperation 
+        operation: BorrowerOperation
     }
     #[derive(Drop, starknet::Event)]
-    struct LUSDBorrowingFeePaid{
+    struct LUSDBorrowingFeePaid {
         #[key]
         borrower: ContractAddress,
         LUSDFee: u256
     }
 
-    fn setAddresses(){}
-    fn openTrove(){}
-    fn addColl(){}
-    fn moveETHGainToTrove(){}
-    fn withdrawColl(){}
-    fn withdrawLUSD(){}
-    fn repayLUSD(){}
-    fn closeTrove(){}
-    fn claimCollateral(){}
-    fn _triggerBorrowingFee(){}
-    fn _getUSDValue(){}
-    fn _getCollChange(){}
-    fn _updateTroveFromAdjustment(){}
-    fn _moveTokensAndETHfromAdjustment(){}
-    fn _activePoolAddColl(){}
-    fn _withdrawLUSD(){}
-    fn _repayLUSD(){}
-    fn _requireSingularCollChange(){}
-    fn _requireCallerIsBorrower(){}
-    fn _requireNonZeroAdjustment(){}
-    fn _requireTroveisActive(){}
-    fn _requireTroveisNotActive(){}
-    fn _requireNonZeroDebtChange(){}
-    fn _requireNotInRecoveryMode(){}
-    fn _requireValidAdjustmentInCurrentMode(){}
-    fn _requireNoCollWithdrawal(){}
-    fn _requireValidLUSDRepayment(currentDebt:u256, debtRepayment:u256){
-        assert(debtRepayment <= currentDebt.sub(LUSD_GAS_COMPENSATION),
-                'BorrowerOps: Amount repaid must not be larger than the Troves debt');
+    fn setAddresses() {}
+    fn openTrove() {}
+    fn addColl() {}
+    fn moveETHGainToTrove() {}
+    fn withdrawColl() {}
+    fn withdrawLUSD() {}
+    fn repayLUSD() {}
+    fn closeTrove() {}
+    fn claimCollateral() {}
+    fn _triggerBorrowingFee() {}
+    fn _getUSDValue() {}
+    fn _getCollChange() {}
+    fn _updateTroveFromAdjustment() {}
+    fn _moveTokensAndETHfromAdjustment() {}
+    fn _activePoolAddColl() {}
+    fn _withdrawLUSD() {}
+    fn _repayLUSD() {}
+    fn _requireSingularCollChange() {}
+    fn _requireCallerIsBorrower() {}
+    fn _requireNonZeroAdjustment() {}
+    fn _requireTroveisActive() {}
+    fn _requireTroveisNotActive() {}
+    fn _requireNonZeroDebtChange() {}
+    fn _requireNotInRecoveryMode() {}
+    fn _requireValidAdjustmentInCurrentMode() {}
+    fn _requireNoCollWithdrawal() {}
+
+    fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
+        assert(
+            debtRepayment <= currentDebt.sub(LUSD_GAS_COMPENSATION),
+            'BorrowerOps: Amount repaid must not be larger than the Troves debt'
+        );
     }
-    fn _requireAtLeastMinNetDebt(const newICR: u256, const oldICR:u256){
+    fn _requireAtLeastMinNetDebt(newICR: u256, oldICR: u256) {
         assert(newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
-    fn _requireNewTCRisAboveCCR(){}
-    fn _requireNewICRisAboveOldICR(){}
-    fn _requireICRisAboveCCR(){}
-    fn _requireICRisAboveMCR(){}
-    fn _requireValidMaxFeePercentage(){}
-    fn _requireSufficientLUSDBalance(){}
-    fn _requireCallerIsStabilityPool(){}
-    fn _getNewTCRFromTroveChange(){}
-    fn _getNewTroveAmounts(){}
-    fn _getNewICRFromTroveChange(){}
-    fn _getNewNominalICRFromTroveChange(){}
-    fn getCompositeDebt(){}
 
     fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
         assert(_newICR >= oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
@@ -212,8 +203,54 @@ mod BorrowerOperations {
         assert(status != 1, "BorrowerOps: Trove is active");
     }
 
-    fn main() {}
+    fn _requireValidLUSDRepayment() {}
+    fn _requireAtLeastMinNetDebt() {}
 
-
+    fn _requireNewTCRisAboveCCR() {}
+    fn _requireNewICRisAboveOldICR() {}
+    fn _requireICRisAboveCCR() {}
+    fn _requireICRisAboveMCR() {}
+    fn _requireValidMaxFeePercentage() {}
+    fn _requireSufficientLUSDBalance() {}
+    fn _requireCallerIsStabilityPool() {}
+    fn _getNewTCRFromTroveChange() {}
+    fn _getNewTroveAmounts() {}
+    fn _getNewICRFromTroveChange() {}
+    fn _getNewNominalICRFromTroveChange() {}
+    fn getCompositeDebt() {}
     
+    fn _requireNewICRisAboveOldICR(newICR: u256, oldICR: u256) {
+        assert(_newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+    }
+    #[view]
+    fn _requireCallerIsBorrower(borrower: ContractAddress) {
+        assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
+    }
+
+    fn _requireAtLeastMinNetDebt(netDebt: u256) {
+        assert(
+            netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum"
+        );
+    }
+    #[view]
+    fn _requireSingularCollChange(collWithdrawal: u256) {
+        assert(
+            msg.value == 0 || collWithdrawal == 0,
+            "BorrowerOperations: Cannot withdraw and add coll"
+        );
+    }
+    #[view]
+    fn _requireCallerIsBorrower(borrower: ContractAddress) {
+        assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
+    }
+
+    #[view]
+    fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
+        assert(
+            msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,
+            "BorrowerOps: There must be either a collateral change or a debt change"
+        );
+    }
+
+    fn main() {}
 }
