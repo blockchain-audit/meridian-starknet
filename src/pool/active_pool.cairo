@@ -1,5 +1,3 @@
-
-
 // import "./Interfaces/IActivePool.sol";
 // import "./Dependencies/SafeMath.sol";
 // import "./Dependencies/Ownable.sol";
@@ -7,8 +5,6 @@
 // import "./Dependencies/console.sol";
 
 // use starknet::ContractAddress;
-
-
 
 // mod ActivePool is Ownable, CheckContract, IActivePool {
 //     using SafeMath for uint256;
@@ -81,7 +77,6 @@
 //         return LUSDDebt;
 //     }
 
-
 //     function sendETH(address _account, uint256 _amount) external override {
 //         _requireCallerIsBOorTroveMorSP();
 //         ETH = ETH.sub(_amount);
@@ -136,3 +131,5 @@
 //         emit ActivePoolETHBalanceUpdated(ETH);
 //     }
 // }
+
+
