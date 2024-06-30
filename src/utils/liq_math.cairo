@@ -30,6 +30,14 @@ mod LiquityMath {
     }
 
     #[generate_trait]
+    fn decMul(x: u256, y: u256)-> u256 {
+      let prod_xy: u256 = x * y; //let prod_xy: u256 = x.mul(y);
+      let decProd:u256 = prod_xy + (DECIMAL_PRECISION / 2) / DECIMAL_PRECISION; // let decProd:u256 = prod_xy.add(DECIMAL_PRECISION / 2).div(DECIMAL_PRECISION);
+      
+      decProd   
+    }
+
+    #[generate_trait]
     fn _decPow( _base: u256, mut _minutes: u256)->u256{
 
         let MAX_MINUTES: u256 = 525600000;
@@ -59,5 +67,39 @@ mod LiquityMath {
 
             decMul(base, result)
         }
+    }
+    
+
+   #[generate_trait]
+   fn _getAbsoluteDifference(a: u256, b: u256) -> u256 {
+        if a >= b {
+            a - b // a.sub(b)
+        }
+        else{ 
+            b - a //b.sub(a)
+        }
+   }
+
+   #[generate_trait]
+   fn _computeNominalCR(mut coll: u256, debt: u256) -> u256 {
+        if debt > 0 {
+            coll = coll * NICR_PRECISION / debt; //coll = coll.mul(NICR_PRECISION).div(debt);
+            coll      
+        }      
+        else {     
+            let maxVal = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff; // = 2 ** 256 - 1
+            maxVal    
+        }
+    }
+
+    #[generate_trait]
+    fn _computeCR(coll: u256, debt: u256, price: u256) -> u256 {
+        if debt > 0 {
+            let newCollRatio: u256 = coll * price / debt; //coll.mul(price).div(debt);        
+            newCollRatio
+        } else {  
+            let maxVal = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff; // = 2 ** 256 - 1
+            maxVal
+        }     
     }
 }
