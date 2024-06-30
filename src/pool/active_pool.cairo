@@ -98,6 +98,18 @@
 //         LUSDDebt = LUSDDebt.sub(_amount);
 //         ActivePoolLUSDDebtUpdated(LUSDDebt);
 //     }
+    #[external]
+    fn increaseLUSDDebt(amount: u256) {
+        requireCallerIsBOorTroveM();
+        LUSDDebt = LUSDDebt += amount;
+        ActivePoolLUSDDebtUpdated(LUSDDebt);
+    }
+    #[external]
+    fn decreaseLUSDDebt(amount: u256) {
+        requireCallerIsBOorTroveMorSP();
+        LUSDDebt = LUSDDebt -= amount;
+        ActivePoolLUSDDebtUpdated(LUSDDebt);
+    }
 
 //     // --- 'require' functions ---
 
