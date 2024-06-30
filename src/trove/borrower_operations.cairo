@@ -132,9 +132,18 @@ mod BorrowerOperations {
     fn openTrove() {}
     fn addColl() {}
     fn moveETHGainToTrove() {}
-    fn withdrawColl() {}
-    fn withdrawLUSD() {}
-    fn repayLUSD() {}
+    #[external(v0)]
+    fn withdrawColl(collWithdrawal:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
+        _adjustTrove(msg.sender, collWithdrawal, 0, false, upperHint, lowerHint, 0);
+    }
+    #[external(v0)]
+    fn withdrawLUSD(maxFeePercentage:u256, LUSDAmount:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
+        _adjustTrove(msg.sender, 0, LUSDAmount, true, upperHint, lowerHint, maxFeePercentage);
+    }
+    #[external(v0)]
+    fn repayLUSD(LUSDAmount:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
+        _adjustTrove(msg.sender, 0, LUSDAmount, false, upperHint, lowerHint, 0);
+    }
     fn closeTrove() {}
     fn claimCollateral() {}
     fn _triggerBorrowingFee() {}
