@@ -1,4 +1,5 @@
 use starknet::ContractAddress;
+use trove::interfaces::IBorrowerOperations;
 
 #[starknet::contract]
 mod BorrowerOperations {
@@ -131,11 +132,33 @@ mod BorrowerOperations {
     fn openTrove() {}
     fn addColl() {}
     fn moveETHGainToTrove() {}
+<<<<<<< HEAD
     fn withdrawColl() {}
     fn withdrawLUSD() {}
     fn repayLUSD() {}
     fn closeTrove() {}
     fn claimCollateral() {}
+=======
+    #[external(v0)]
+    fn withdrawColl(collWithdrawal:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
+        _adjustTrove(msg.sender, collWithdrawal, 0, false, upperHint, lowerHint, 0);
+    }
+    #[external(v0)]
+    fn withdrawLUSD(maxFeePercentage:u256, LUSDAmount:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
+        _adjustTrove(msg.sender, 0, LUSDAmount, true, upperHint, lowerHint, maxFeePercentage);
+    }
+    #[external(v0)]
+    fn repayLUSD(LUSDAmount:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
+        _adjustTrove(msg.sender, 0, LUSDAmount, false, upperHint, lowerHint, 0);
+    }
+    fn closeTrove() {}
+
+    #[external]
+    fn claimCollateral() {
+        let caller = get_caller_address();
+        collSurplusPool.claimColl(caller);
+    }
+>>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
     fn _triggerBorrowingFee() {}
     fn _getUSDValue() {}
     fn _getCollChange() {}
@@ -144,6 +167,7 @@ mod BorrowerOperations {
     fn _activePoolAddColl() {}
     fn _withdrawLUSD() {}
     fn _repayLUSD() {}
+<<<<<<< HEAD
     fn _requireSingularCollChange() {}
     fn _requireCallerIsBorrower() {}
     fn _requireNonZeroAdjustment() {}
@@ -167,7 +191,139 @@ mod BorrowerOperations {
     fn _getNewICRFromTroveChange() {}
     fn _getNewNominalICRFromTroveChange() {}
     fn getCompositeDebt() {}
+=======
+    fn _requireNotInRecoveryMode() {}
 
+    fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
+        assert(
+            debtRepayment <= currentDebt.sub(LUSD_GAS_COMPENSATION),
+            'BorrowerOps: Amount repaid must not be larger than the Troves debt'
+        );
+    }
+    fn _requireAtLeastMinNetDebt(newICR: u256, oldICR: u256) {
+        assert(newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+    }
+>>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
+
+    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
+        assert(_newICR >= oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+    }
+
+    fn _requireAtLeastMinNetDebt(const netDebt: u256)  {
+        assert(netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum");
+    }
+
+    #[view]
+    fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
+        assert(
+            msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,
+            "BorrowerOps: There must be either a collateral change or a debt change"
+        );
+    }
+
+    #[view]
+    fn _requireTroveisActive( troveManager ITroveManager,  borrower ContractAddress )   {
+        status: u256 = troveManager.getTroveStatus(borrower);
+        assert(status == 1, "BorrowerOps: Trove does not exist or is closed");
+    }
+
+    #[view]
+    function _requireTroveisNotActive( troveManager ITroveManager,  borrower ContractAddress)   {
+        status:u256 = troveManager.getTroveStatus(borrower);
+        assert(status != 1, "BorrowerOps: Trove is active");
+    }
+
+    fn _requireNewTCRisAboveCCR() {}
+    fn _getNewTCRFromTroveChange() {}
+    fn _getNewTroveAmounts() {}
+    fn _getNewICRFromTroveChange() {}
+    fn _getNewNominalICRFromTroveChange() {}
+    fn getCompositeDebt() {}
+    
+    fn _requireNewICRisAboveOldICR(newICR: u256, oldICR: u256) {
+        assert(_newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
+    }
+
+    fn _requireAtLeastMinNetDebt(netDebt: u256) {
+        assert(
+            netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum"
+        );
+    }
+    #[view]
+    fn _requireSingularCollChange(collWithdrawal: u256) {
+        assert(
+            msg.value == 0 || collWithdrawal == 0,
+            "BorrowerOperations: Cannot withdraw and add coll"
+        );
+    }
+    #[view]
+    fn _requireCallerIsBorrower(borrower: ContractAddress) {
+        assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
+    }
+
+    fn _requireNoCollWithdrawal(const ollWithdrawal :u256)  {
+        assert(_collWithdrawal == 0, "BorrowerOps: Collateral withdrawal not permitted Recovery Mode");
+    }
+    fn _requireNonZeroDebtChange(const  _LUSDChange :u256)    {
+        assert(_LUSDChange > 0, "BorrowerOps: Debt increase requires non-zero debtChange");
+    }
+
+    fn _requireICRisAboveMCR(const newICR:felt256){
+        assert(newICR >= MCR, "BorrowerOps: An operation that would result in ICR < MCR is not permitted");
+    }
+
+    fn _requireICRisAboveCCR(const newICR:felt256){
+        assert(newICR >= CCR, "BorrowerOps: Operation must leave trove with ICR >= CCR");
+    }
+
+    #[view]
+    fn _requireValidAdjustmentInCurrentMode(
+                isRecoveryMode:bool,
+                collWithdrawal:felt256,
+                isDebtIncrease:bool,
+                vars:LocalVariables_adjustTrove 
+        ){
+            if (isRecoveryMode){
+                _requireNoCollWithdrawal(collWithdrawal);
+                if(isDebtIncrease){
+                    _requireICRisAboveCCR(vars.newICR);
+                    _requireNewICRisAboveOldICR(vars.newICR, vars.oldICR);
+                }
+            }else{
+                _requireICRisAboveMCR(vars.newICR);
+                vars.newTCR = _getNewTCRFromTroveChange(
+                      vars.collChange, vars.isCollIncrease, vars.netDebtChange, isDebtIncrease, vars.price
+                );
+                _requireNewTCRisAboveCCR(vars.newTCR);
+            }
+    }
+
+    fn _requireValidMaxFeePercentage(const maxFeePercentage :u256, const isRecoveryMode bool) {
+        if isRecoveryMode {
+            assert(maxFeePercentage <= DECIMAL_PRECISION, "Max fee percentage must less than or equal to 100%");
+        } else {
+            assert(
+                _maxFeePercentage >= BORROWING_FEE_FLOOR && maxFeePercentage <= DECIMAL_PRECISION,
+                "Max fee percentage must be between 0.5% and 100%"
+            );
+        }
+    }
+    #[view]
+    fn _requireSufficientLUSDBalance( lusdToken ILUSDToken, borrower ContractAddress,  debtRepayment :u256) {
+        assert(
+            lusdToken.balanceOf(borrower) >= debtRepayment,
+            "BorrowerOps: Caller doesnt have enough LUSD to make repayment"
+        );
+    }
+    #[view]
+    fn _requireCallerIsStabilityPool()   {
+        assert(msg.sender == stabilityPoolAddress, "BorrowerOps: Caller is not Stability Pool");
+    }
 
     fn main() {}
+<<<<<<< HEAD
 }
+=======
+
+}
+>>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
