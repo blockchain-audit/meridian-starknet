@@ -7,3 +7,4 @@ trait IRewardsPool<TContractState> {
     fn withdrawAndClaim(self: TContractState);
     fn claimReward(self: TContractState);
 }
+

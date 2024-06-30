@@ -4,9 +4,9 @@ use openzeppelin::token::erc20::{IERC20};
 
 use starknet::ContractAddress;
 
-use interfaces::{ILPTokenWrapper,IUnipool};
+use ::interfaces::{ILPTokenWrapper,IUnipool};
 
-use ../interfaces::{ILQTYToken};
+
 
 #[starknet::interface]
 trait Event<T> {
@@ -24,7 +24,7 @@ mod LPTokenWrapper {
         _totalSupply: u256,
         _balances: LegacyMap::<felt, u256>,
         // uniToken: IERC20
-        uniTokenAddress := contract_address(IERC20)
+        uniTokenAddress : contract_address
     }
 
     #[abi(embed_v0)]
@@ -56,54 +56,117 @@ mod LPTokenWrapper {
 
 
 #[starknet::contract]
-mod Unipool of super::IUnipool<ContractState> {
+mod Unipool {
 
-    #[storage_var]
-    pub duration:u256,
-    pub lqtyToken:ILQTYToken,
-    pub periodFinish:u256,
-    pub rewardRate:u256,
-    pub lastUpdateTime:u256,
-    pub rewardPerTokenStored:u256,
-    pub userRewardPerTokenPaid: Map<felt, u256>,
-    pub rewards: Map<felt, u256>
+    //use ILQTYToken;   
+    #[storage]
+    struct Storage {
+        duration:u256,
+        lqtyToken:ILQTYToken,
+        periodFinish:u256,
+        rewardRate:u256,
+        lastUpdateTime:u256,
+        rewardPerTokenStored:u256,
+        userRewardPerTokenPaid: Map<ContractAddress, u256>,
+        rewards: Map<ContractAddress, u256>
+    }
 
     #[event]
     #[derive(Drop, starknet::Event)]
     enum LQTYTokenAddressChanged {
-        _lqtyTokenAddress: felt
+        _lqtyTokenAddress: ContractAddress
     }
 
     enum UniTokenAddressChanged {
-        _uniTokenAddress: felt
+        _uniTokenAddress: ContractAddress
     }
 
     struct Staked {
         #[key]
-        user: felt,
+        user: ContractAddress,
         amount: u256,
     }
 
     struct Withdrawn {
         #[key]
-        user: felt,
+        user: ContractAddress,
         amount: u256
     }
 
     struct RewardPaid {
         #[key]
-        user:felt,
+        user:ContractAddress,
         reward:u256
+    }
+
+    struct Staked{
+        #[key]
+        user:ContractAddress,
+        amount:u256
     }
 
     #[abi(embed_v0)]
     impl Unipool of super::IUnipool<ContractState> {
 
-        //initialization function
-        fn setParams(_lqtyTokenAddress:felt,_uniTokenAddress:felt,_duration:felt){
+        #[external(v0)]
+        fn setParams(_lqtyTokenAddress:ContractAddress,_uniTokenAddress:ContractAddress,_duration:ContractAddress){
             self.uniToken.write(IERC20(_uniTokenAddress));
             self.lqtyToken.write(IERC20(_lqtyTokenAddress));
+            self._notifyRewardAmount(lqtyToken.getLpRewardsEntitlement(), _duration);
 
+            self.emit(LQTYTokenAddressChanged{_lqtyTokenAddress:_lqtyTokenAddress});
+            self.emit (UniTokenAddressChanged {_lqtyTokenAddress:_uniTokenAddress});
+
+            self._renounceOwnership();
         }
+
+        fn _notifyRewardAmount(_reward:u256,_duration:u256){
+            assert _reward>0;
+            assert _reward == lqtyToken.balanceOf(address(this));
+            assert periodFinish == 0;
+            
+            let timestamp = syscalls.get_block_timestamp();
+            self._updateReward();
+            self.rewardRate.write((self._reward).div(_duration));
+            self.lastUpdateTime.write(timestamp);
+            self.periodFinish.write(timestamp);
+            self.emit(RewardAdded{_reward});//Ownable
+        } 
+
+        fn earned(account: Address) -> ContractAddress {
+
+            let balance = balanceOf(account);
+            let reward_per_token = rewardPerToken();         
+            
+            let user_reward_per_token_paid = userRewardPerTokenPaid[account];          
+           
+            let numerator = mul(balance, sub(reward_per_token, user_reward_per_token_paid));
+            let denominator = cast(felt, 1_000_000_000_000_000_000); // 1e18 represented as felt
+            let quotient = div(numerator, denominator);         
+          
+            let earned_amount = add(quotient, rewards[account]);         
+            return earned_amount;
+        }
+
+
+        fn stake(amount: felt) -> felt {
+    
+            // Check if amount is greater than zero
+            let amount_gt_zero =lt(amount, felt(0));  //In Cairo, felt(0) represents zero
+            assert(amount_gt_zero, "Cannot stake 0");
+
+            // Check if uniToken address is not zero
+            let is_uniToken_zero = eq(uniToken, FIELD_CONSTANT(0));
+            assert(!is_uniToken_zero, "Liquidity Pool Token has not been set yet")
+
+            // Call internal functions for updates (assuming they are written in Cairo)
+            _updatePeriodFinish()
+            _updateAccountReward(msg.sender)
+
+           // Call parent contract's stake function (assuming "super" refers to a parent contract)
+           super.stake(amount);
+
+           self.emit(Staked{msg.sender},{amount});
+        }        
     }
 }
