@@ -238,6 +238,17 @@ mod TroveManager {
         ETHLot: felt252,
         cancelledPartial: bool,
     }
+    #[view]
+    fn hasPendingRewards(_borrower:felt252)  -> bool {
+        // /*
+        // * A Trove has pending rewards if its snapshot is less than the current rewards per-unit-staked sum:
+        // * this indicates that rewards have occured since the snapshot was made, and the user therefore has
+        // * pending rewards
+        // */
+
+        return rewardSnapshots[_borrower].ETH < L_ETH && Troves[_borrower].status == Status.active;
+    }
+
 
     fn _removeStake( _borrower:felt252)  {
 
