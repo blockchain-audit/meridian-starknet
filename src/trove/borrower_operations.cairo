@@ -255,7 +255,6 @@ mod BorrowerOperations {
         assert(_LUSDChange > 0, "BorrowerOps: Debt increase requires non-zero debtChange");
     }
 
-<<<<<<< HEAD
     fn _requireICRisAboveMCR(const newICR:felt256){
         assert(newICR >= MCR, "BorrowerOps: An operation that would result in ICR < MCR is not permitted");
     }
@@ -286,7 +285,6 @@ mod BorrowerOperations {
             }
     }
 
-=======
     fn _requireValidMaxFeePercentage(const maxFeePercentage :u256, const isRecoveryMode bool) {
         if isRecoveryMode {
             assert(maxFeePercentage <= DECIMAL_PRECISION, "Max fee percentage must less than or equal to 100%");
@@ -310,6 +308,6 @@ mod BorrowerOperations {
     }
 
 
->>>>>>> f5e1003b15a80a7ed32f8f4b6fc9f6b01b39006e
     fn main() {}
 
+}
