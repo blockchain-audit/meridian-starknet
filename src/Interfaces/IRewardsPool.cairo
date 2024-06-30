@@ -8,6 +8,5 @@ trait IRewardsPool<TContractState> {
     fn earned(self: TContractState, account: felt252) -> u256;
     fn withdrawAndClaim(self: TContractState);
     fn claimReward(self: TContractState);
-
 }
 
