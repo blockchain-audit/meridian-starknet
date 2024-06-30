@@ -1,13 +1,10 @@
-
 #[starknet::interface]
 trait ICollSurplusPool {
-
-
     #[external(v0)]
     fn setAddresses(
-    _borrowerOperationsAddress: felt252,
-    _troveManagerAddress: felt252,
-    _activePoolAddress: felt252
+        _borrowerOperationsAddress: felt252,
+        _troveManagerAddress: felt252,
+        _activePoolAddress: felt252
     );
 
     #[view]
@@ -39,8 +36,5 @@ trait ICollSurplusPool {
 
     #[event(v0)]
     fn EtherSent(_to: felt252, _amount: u256);
-
-
-
 }
 

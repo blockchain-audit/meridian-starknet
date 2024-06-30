@@ -1,4 +1,3 @@
-
 #[starknet::interface]
 trait IActivePool {
     #[external(v0)]
