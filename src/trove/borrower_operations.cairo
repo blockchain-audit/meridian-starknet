@@ -1,4 +1,5 @@
 use starknet::ContractAddress;
+use debug::PrintTrait;
 
 #[starknet::contract]
 mod BorrowerOperations {
@@ -160,7 +161,21 @@ mod BorrowerOperations {
     fn _requireNewICRisAboveOldICR(){}
     fn _requireICRisAboveCCR(){}
     fn _requireICRisAboveMCR(){}
-    fn _requireValidMaxFeePercentage(){}
+
+    // from BaseMath
+    const DECIMAL_PRECISION: u256 = 1000000000000000000;
+    // from LiquityBase
+    const BORROWING_FEE_FLOOR: u256 = 5000000000000000; // 0.5%
+
+    #[generate_trait]
+    fn _requireValidMaxFeePercentage(maxFeePercentage: u256, isRecoveryMode: bool) {
+        if isRecoveryMode {
+            assert(maxFeePercentage <= DECIMAL_PRECISION, "Max fee percentage must less than or equal to 100%");
+        } else {
+            assert(maxFeePercentage >= BORROWING_FEE_FLOOR && maxFeePercentage <= DECIMAL_PRECISION, "Max fee percentage must be between 0.5% and 100%");
+        }
+
+    }
     fn _requireSufficientLUSDBalance(){}
     fn _requireCallerIsStabilityPool(){}
     fn _getNewTCRFromTroveChange(){}
