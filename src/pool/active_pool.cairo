@@ -4,18 +4,19 @@
 // import "./Dependencies/CheckContract.sol";
 // import "./Dependencies/console.sol";
 
-// use starknet::ContractAddress;
+use starknet::ContractAddress;
 
-// mod ActivePool is Ownable, CheckContract, IActivePool {
+mod ActivePool {
+
+//   mod ActivePool is Ownable, CheckContract, IActivePool {
 //     using SafeMath for uint256;
 
 //     const NAME : felt252 = "ActivePool";
-
 //     borrowerOperationsAddress: ContractAddress
 //     troveManagerAddress: ContractAddress
 //     stabilityPoolAddress: ContractAddress
 //     defaultPoolAddress: ContractAddress
-//     ETH: u256 // deposited ether tracker
+    ETH: u256 // deposited ether tracker
 //     LUSDDebt: u256
 
 //     #[event]
@@ -126,9 +127,40 @@
 //     // --- Fallback function ---
 
 //     receive() external payable {
-//         _requireCallerIsBorrowerOperationsOrDefaultPool();
-//         ETH = ETH.add(msg.value);
-//         emit ActivePoolETHBalanceUpdated(ETH);
+//         _reimport "./Dependencies/SafeMath.sol";
+// import "./Dependencies/Ownable.sol";
+// import "./Dependencies/CheckContract.sol";
+// import "./Dependencies/console.sol";on getETH() external view override returns (uint256) {
+//         return ETH;
 //     }
-// }
 
+//     function getLUSDDebt() external view override returns (uint256) {
+//         return LUSDDebt;
+//     }
+
+//     // --- Pool functionality ---
+
+//     function sendETH(address _account, uint256 _amount) external override {
+//         _requireCallerIsBOorTroveMorSP();
+//         ETH = ETH.sub(_amount);
+//         emit ActivePoolETHBalanceUpdated(ETH);
+//         emit EtherSent(_account, _amount);
+
+//         (bool success,) = _account.call{value: _amount}("");
+//         require(success, "ActivePool: sending ETH failed");
+//  }
+
+#[external]
+#[view]
+   fn getETH() -> u256 {
+     ETH;
+    }
+ #[external]
+ #[view]
+    fn getLUSDDebt() -> u256 {
+     LUSDDebt;
+    }
+
+   
+ 
+}
