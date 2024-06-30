@@ -255,5 +255,35 @@ mod BorrowerOperations {
         assert(_LUSDChange > 0, "BorrowerOps: Debt increase requires non-zero debtChange");
     }
 
+    fn _requireICRisAboveMCR(const newICR:felt256){
+        assert(newICR >= MCR, "BorrowerOps: An operation that would result in ICR < MCR is not permitted");
+    }
+
+    fn _requireICRisAboveCCR(const newICR:felt256){
+        assert(newICR >= CCR, "BorrowerOps: Operation must leave trove with ICR >= CCR");
+    }
+
+    #[view]
+    fn _requireValidAdjustmentInCurrentMode(
+                isRecoveryMode:bool,
+                collWithdrawal:felt256,
+                isDebtIncrease:bool,
+                vars:LocalVariables_adjustTrove 
+        ){
+            if (isRecoveryMode){
+                _requireNoCollWithdrawal(collWithdrawal);
+                if(isDebtIncrease){
+                    _requireICRisAboveCCR(vars.newICR);
+                    _requireNewICRisAboveOldICR(vars.newICR, vars.oldICR);
+                }
+            }else{
+                _requireICRisAboveMCR(vars.newICR);
+                vars.newTCR = _getNewTCRFromTroveChange(
+                      vars.collChange, vars.isCollIncrease, vars.netDebtChange, isDebtIncrease, vars.price
+                );
+                _requireNewTCRisAboveCCR(vars.newTCR);
+            }
+    }
+
     fn main() {}
-}
+
