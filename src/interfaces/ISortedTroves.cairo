@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 use starknet::ContractAddress;
 #[starknet::interface]
 
@@ -65,3 +66,6 @@ trait ISortedTroves<TContractState> {
 
     fn findInsertPosition(self: @TContractState, ICR: u256, prevId: ContractAddress, nextId: ContractAddress) -> (ContractAddress,ContractAddress);
 }
+=======
+
+>>>>>>> ffb5a7f4594cbcab6318073023ca09d357501dcd

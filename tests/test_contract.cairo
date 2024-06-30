@@ -7,11 +7,33 @@ use meridian_starknet::IHelloStarknetSafeDispatcherTrait;
 use meridian_starknet::IHelloStarknetDispatcher;
 use meridian_starknet::IHelloStarknetDispatcherTrait;
 
+
+use meridian_starknet::pool::rewards_pool;
+// use meridian_starknet::IHelloStarknetSafeDispatcherTrait;
+// use meridian_starknet::pool::rewards_poolDispatcher;
+// use meridian_starknet::IHelloStarknetDispatcherTrait;
+
 fn deploy_contract(name: ByteArray) -> ContractAddress {
     let contract = declare(name).unwrap();
     let (contract_address, _) = contract.deploy(@ArrayTrait::new()).unwrap();
     contract_address
 }
+
+
+// #[test]
+// fn test_get_balance() {
+// let contract_address = deploy_contract("rewards_pool");
+
+// let dispatcher = rewards_poolDispatcher { contract_address };
+
+// let balance_before = rewards_pool::balanceOf(contract_address);
+// assert(balance_before == 0, 'Invalid balance');
+
+// dispatcher.increase_balance(42);
+
+// let balance_after = dispatcher.get_balance();
+// assert(balance_after == 42, 'Invalid balance');
+// }
 
 #[test]
 fn test_increase_balance() {
