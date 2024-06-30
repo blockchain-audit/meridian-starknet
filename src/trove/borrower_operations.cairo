@@ -142,26 +142,22 @@ mod BorrowerOperations {
     fn _updateTroveFromAdjustment() {}
     fn _moveTokensAndETHfromAdjustment() {}
     // Send STARK to Active Pool and increase its recorded STARK balance
+    #[generate_trait]
     fn _activePoolAddColl(activePool:IActivePool,amount:felt252)internal {
-        bool success = ContractAddress(activePool).call{value: amount};
+        bool success =call_contract(
+            to_address=ContractAddress(activePool),
+            selector=(""),
+            calldata=[amount])
         assert(success, 'BorrowerOps: Sending STRAK to ActivePool failed');
     }
-    // Issue the specified amount of LUSD to _account and increases the total active debt (_netDebtIncrease potentially includes a LUSDFee)
-
-    fn _withdrawLUSD() {
-
-    function _withdrawLUSD(
-        IActivePool _activePool,
-        ILUSDToken _lusdToken,
-        address _account,
-        uint256 _LUSDAmount,
-        uint256 _netDebtIncrease
-    ) internal {
-        _activePool.increaseLUSDDebt(_netDebtIncrease);
-        _lusdToken.mint(_account, _LUSDAmount);
+    // Issue the specified amount of LUSD to account and increases the total active debt (netDebtIncrease potentially includes a LUSDFee)
+    #[generate_trait]
+    fn _withdrawLUSD(activePool:IActivePool,lusdToken:ILQTYToken,ContractAddress:account,LUSDAmount:felt252,netDebtIncrease:felt252) {
+        activePool.increaseLUSDDebt(netDebtIncrease);
+        lusdToken.mint(account, LUSDAmount);
     }
-    }
-    // Burn the specified amount of LUSD from _account and decreases the total active debt
+    // Burn the specified amount of LUSD from account and decreases the total active debt
+    #[generate_trait]
     fn _repayLUSD(activePool:IActivePool,lusdToken:ILUSDToken,account:ContractAddress,LUSD:felt252) {
         activePool.decreaseLUSDDebt(LUSD);
         lusdToken.burn(account, LUSD);
