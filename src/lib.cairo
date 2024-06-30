@@ -23,3 +23,5 @@ mod HelloStarknet {
         }
     }
 }
+
+mod interfaces;
