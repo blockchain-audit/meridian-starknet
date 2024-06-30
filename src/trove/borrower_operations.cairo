@@ -248,6 +248,12 @@ mod BorrowerOperations {
             "BorrowerOps: There must be either a collateral change or a debt change"
         );
     }
+    fn _requireNoCollWithdrawal(const ollWithdrawal :u256)  {
+        assert(_collWithdrawal == 0, "BorrowerOps: Collateral withdrawal not permitted Recovery Mode");
+    }
+    fn _requireNonZeroDebtChange(const  _LUSDChange :u256)    {
+        assert(_LUSDChange > 0, "BorrowerOps: Debt increase requires non-zero debtChange");
+    }
 
     fn main() {}
 }
