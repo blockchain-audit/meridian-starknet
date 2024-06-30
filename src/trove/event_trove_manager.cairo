@@ -1,145 +1,146 @@
-#[starknet::contract] 
+#[starknet::contract]
 use starknet::ContractAddress;
-mod EventsTroveManager{
-#[event]
-#[derive(Drop, starknet::Event)]
+mod EventsTroveManager {
+    #[event]
+    #[derive(Drop, starknet::Event)]
     enum TroveManagerOperation {
-            applyPendingRewards:applyPendingRewards,
-            liquidateInNormalMode:liquidateInNormalMode,
-            liquidateInRecoveryMode:liquidateInRecoveryMode,
-            redeemCollateral:redeemCollateral,
-        }
+        applyPendingRewards: applyPendingRewards,
+        liquidateInNormalMode: liquidateInNormalMode,
+        liquidateInRecoveryMode: liquidateInRecoveryMode,
+        redeemCollateral: redeemCollateral,
+    }
     enum Event {
         BorrowerOperationsAddressChanged: BorrowerOperationsAddressChanged,
-        PriceFeedAddressChanged:PriceFeedAddressChanged,
-        LUSDTokenAddressChanged:LUSDTokenAddressChanged,
-        ActivePoolAddressChanged:ActivePoolAddressChanged,
-        DefaultPoolAddressChanged:DefaultPoolAddressChanged,
-        StabilityPoolAddressChanged:StabilityPoolAddressChanged,
-        GasPoolAddressChanged:GasPoolAddressChanged,
-        CollSurplusPoolAddressChanged:CollSurplusPoolAddressChanged,
-        SortedTrovesAddressChanged:SortedTrovesAddressChanged,
-        LQTYTokenAddressChanged:LQTYTokenAddressChanged,
-        LQTYStakingAddressChanged:LQTYStakingAddressChanged,
-        Liquidation:Liquidation,
-        Redemption:Redemption,
-        TroveUpdated:TroveUpdated,
-        LastFeeOpTimeUpdated:LastFeeOpTimeUpdated,
-        BaseRateUpdated:BaseRateUpdated,
-        TroveLiquidated:TroveLiquidated,
-        SystemSnapshotsUpdated:SystemSnapshotsUpdated,
-        TotalStakesUpdated:TotalStakesUpdated,
-        TroveSnapshotsUpdated:TroveSnapshotsUpdated,
-        LTermsUpdated:LTermsUpdated,
-        TroveIndexUpdated:TroveIndexUpdated,
-        
+        PriceFeedAddressChanged: PriceFeedAddressChanged,
+        LUSDTokenAddressChanged: LUSDTokenAddressChanged,
+        ActivePoolAddressChanged: ActivePoolAddressChanged,
+        DefaultPoolAddressChanged: DefaultPoolAddressChanged,
+        StabilityPoolAddressChanged: StabilityPoolAddressChanged,
+        GasPoolAddressChanged: GasPoolAddressChanged,
+        CollSurplusPoolAddressChanged: CollSurplusPoolAddressChanged,
+        SortedTrovesAddressChanged: SortedTrovesAddressChanged,
+        LQTYTokenAddressChanged: LQTYTokenAddressChanged,
+        LQTYStakingAddressChanged: LQTYStakingAddressChanged,
+        Liquidation: Liquidation,
+        Redemption: Redemption,
+        TroveUpdated: TroveUpdated,
+        LastFeeOpTimeUpdated: LastFeeOpTimeUpdated,
+        BaseRateUpdated: BaseRateUpdated,
+        TroveLiquidated: TroveLiquidated,
+        SystemSnapshotsUpdated: SystemSnapshotsUpdated,
+        TotalStakesUpdated: TotalStakesUpdated,
+        TroveSnapshotsUpdated: TroveSnapshotsUpdated,
+        LTermsUpdated: LTermsUpdated,
+        TroveIndexUpdated: TroveIndexUpdated,
     }
     #[derive(Drop, starknet::Event)]
-    struct BorrowerOperationsAddressChanged{
+    struct BorrowerOperationsAddressChanged {
         _newBorrowerOperationsAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct PriceFeedAddressChanged{
+    struct PriceFeedAddressChanged {
         _newPriceFeedAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct LUSDTokenAddressChanged{
+    struct LUSDTokenAddressChanged {
         _newLUSDTokenAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct ActivePoolAddressChanged{
+    struct ActivePoolAddressChanged {
         _activePoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct DefaultPoolAddressChanged{
+    struct DefaultPoolAddressChanged {
         _defaultPoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct StabilityPoolAddressChanged{
+    struct StabilityPoolAddressChanged {
         _stabilityPoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct GasPoolAddressChanged{
+    struct GasPoolAddressChanged {
         _gasPoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct CollSurplusPoolAddressChanged{
+    struct CollSurplusPoolAddressChanged {
         _collSurplusPoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct SortedTrovesAddressChanged{
+    struct SortedTrovesAddressChanged {
         _sortedTrovesAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct LQTYTokenAddressChanged{
+    struct LQTYTokenAddressChanged {
         _lqtyTokenAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct LQTYStakingAddressChanged{
+    struct LQTYStakingAddressChanged {
         _lqtyStakingAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
-    struct Liquidation{
+    struct Liquidation {
         _liquidatedDebt: felt252,
-        _liquidatedColl:felt252,
-        _collGasCompensation:felt252,
-        _LUSDGasCompensation:felt252,
-    }   
+        _liquidatedColl: felt252,
+        _collGasCompensation: felt252,
+        _LUSDGasCompensation: felt252,
+    }
     #[derive(Drop, starknet::Event)]
-    struct Redemption{
+    struct Redemption {
         _attemptedLUSDAmount: felt252,
-        _actualLUSDAmount:felt252,
-        _ETHSent:felt252,
-        _ETHFee:felt252,
+        _actualLUSDAmount: felt252,
+        _ETHSent: felt252,
+        _ETHFee: felt252,
     }
     #[derive(Drop, starknet::Event)]
-    struct TroveUpdated{
-        indexed _borrower: ContractAddress,
-        _debt:felt252,
-        _coll:felt252,
-        _stake:felt252,
+    struct TroveUpdated {
+        #[key]
+        _borrower: ContractAddress,
+        _debt: felt252,
+        _coll: felt252,
+        _stake: felt252,
         //check
-        _operation:TroveManagerOperation,
+        _operation: TroveManagerOperation,
     }
     #[derive(Drop, starknet::Event)]
-    struct TroveLiquidated{
-        indexed _borrower: ContractAddress,
-        _debt:felt252,
-        _coll:felt252,
+    struct TroveLiquidated {
+        #[key]
+        _borrower: ContractAddress,
+        _debt: felt252,
+        _coll: felt252,
         //check
-        _operation:TroveManagerOperation,
+        _operation: TroveManagerOperation,
     }
     #[derive(Drop, starknet::Event)]
-    struct BaseRateUpdated{
-        _baseRate:felt252,
+    struct BaseRateUpdated {
+        _baseRate: felt252,
     }
     #[derive(Drop, starknet::Event)]
-    struct LastFeeOpTimeUpdated{
-        _lastFeeOpTime:felt252,
-    } 
-    #[derive(Drop, starknet::Event)]
-    struct TotalStakesUpdated{
-        _newTotalStakes:felt252,
+    struct LastFeeOpTimeUpdated {
+        _lastFeeOpTime: felt252,
     }
     #[derive(Drop, starknet::Event)]
-    struct SystemSnapshotsUpdated{
-        _totalStakesSnapshot:felt252,
-        _totalCollateralSnapshot:felt252,
+    struct TotalStakesUpdated {
+        _newTotalStakes: felt252,
     }
     #[derive(Drop, starknet::Event)]
-    struct LTermsUpdated{
-        _L_ETH:felt252,
-        _L_LUSDDebt:felt252,
+    struct SystemSnapshotsUpdated {
+        _totalStakesSnapshot: felt252,
+        _totalCollateralSnapshot: felt252,
+    }
+    #[derive(Drop, starknet::Event)]
+    struct LTermsUpdated {
+        _L_ETH: felt252,
+        _L_LUSDDebt: felt252,
     }
     #[derive(Drop, starknet::Event)]
     //אותם משתנים רק שם האירוע שונה 
-    struct TroveSnapshotsUpdated{
-        _L_ETH:felt252,
-        _L_LUSDDebt:felt252,
+    struct TroveSnapshotsUpdated {
+        _L_ETH: felt252,
+        _L_LUSDDebt: felt252,
     }
     #[derive(Drop, starknet::Event)]
-    struct TroveIndexUpdated{
-        _borrower:ContractAddress,
-        _newIndex:felt252,
+    struct TroveIndexUpdated {
+        _borrower: ContractAddress,
+        _newIndex: felt252,
     }
-  }
+}

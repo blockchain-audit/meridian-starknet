@@ -1,4 +1,5 @@
 use starknet::ContractAddress;
+use trove::interfaces::IBorrowerOperations;
 
 #[starknet::contract]
 mod BorrowerOperations {
@@ -127,50 +128,48 @@ mod BorrowerOperations {
         LUSDFee: u256
     }
 
-    fn setAddresses() {}
-    fn openTrove() {}
-    fn addColl() {}
-    fn moveETHGainToTrove() {}
-    fn withdrawColl() {}
-    fn withdrawLUSD() {}
-    fn repayLUSD() {}
-    fn closeTrove() {}
-    #[external]
-    fn claimCollateral() {
-        let caller = get_caller_address();
-        collSurplusPool.claimColl(caller);
-    }
-    fn _triggerBorrowingFee() {}
-    fn _getUSDValue() {}
-    fn _getCollChange() {}
-    fn _updateTroveFromAdjustment() {}
-    fn _moveTokensAndETHfromAdjustment() {}
-    fn _activePoolAddColl() {}
-    fn _withdrawLUSD() {}
-    fn _repayLUSD() {}
-    fn _requireSingularCollChange() {}
-    fn _requireCallerIsBorrower() {}
-    fn _requireNonZeroAdjustment() {}
-    fn _requireTroveisActive() {}
-    fn _requireTroveisNotActive() {}
-    fn _requireNonZeroDebtChange() {}
-    fn _requireNotInRecoveryMode() {}
-    fn _requireValidAdjustmentInCurrentMode() {}
-    fn _requireNoCollWithdrawal() {}
-    fn _requireValidLUSDRepayment() {}
-    fn _requireAtLeastMinNetDebt() {}
-    fn _requireNewTCRisAboveCCR() {}
-    fn _requireNewICRisAboveOldICR() {}
-    fn _requireICRisAboveCCR() {}
-    fn _requireICRisAboveMCR() {}
-    fn _requireValidMaxFeePercentage() {}
-    fn _requireSufficientLUSDBalance() {}
-    fn _requireCallerIsStabilityPool() {}
-    fn _getNewTCRFromTroveChange() {}
-    fn _getNewTroveAmounts() {}
-    fn _getNewICRFromTroveChange() {}
-    fn _getNewNominalICRFromTroveChange() {}
-    fn getCompositeDebt() {}
+    fn setAddresses(){}
+    fn openTrove(){}
+    fn addColl(){}
+    fn moveETHGainToTrove(){}
+    fn withdrawColl(){}
+    fn withdrawLUSD(){}
+    fn repayLUSD(){}
+    fn closeTrove(){}
+    fn claimCollateral(){}
+    fn _triggerBorrowingFee(){}
+    fn _getUSDValue(){}
+    fn _getCollChange(){}
+    fn _updateTroveFromAdjustment(){}
+    fn _moveTokensAndETHfromAdjustment(){}
+    fn _activePoolAddColl(){}
+    fn _withdrawLUSD(){}
+    fn _repayLUSD(){}
+    fn _requireSingularCollChange(){}
+    fn _requireCallerIsBorrower(){}
+    fn _requireNonZeroAdjustment(){}
+    fn _requireTroveisActive(){}
+    fn _requireTroveisNotActive(){}
+    fn _requireNonZeroDebtChange(){}
+    fn _requireNotInRecoveryMode(){}
+    fn _requireValidAdjustmentInCurrentMode(){}
+    fn _requireNoCollWithdrawal(){}
+    fn _requireValidLUSDRepayment(){}
+    fn _requireAtLeastMinNetDebt(){}
+    fn _requireNewTCRisAboveCCR(){}
+    fn _requireNewICRisAboveOldICR(){}
+    fn _requireICRisAboveCCR(){}
+    fn _requireICRisAboveMCR(){}
+    fn _requireValidMaxFeePercentage(){}
+    fn _requireSufficientLUSDBalance(){}
+    fn _requireCallerIsStabilityPool(){}
+    fn _getNewTCRFromTroveChange(){}
+    fn _getNewTroveAmounts(){}
+    fn _getNewICRFromTroveChange(){}
+    fn _getNewNominalICRFromTroveChange(){}
+    fn getCompositeDebt(){}
+
+
 
 
     fn main() {}
