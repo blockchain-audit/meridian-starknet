@@ -1,5 +1,5 @@
 use starknet::ContractAddress;
-
+use trove::interfaces::IBorrowerOperations;
 
 #[starknet::contract]
 mod BorrowerOperations {
@@ -203,11 +203,8 @@ mod BorrowerOperations {
         assert(status != 1, "BorrowerOps: Trove is active");
     }
 
-    fn _requireValidLUSDRepayment() {}
-    fn _requireAtLeastMinNetDebt() {}
 
     fn _requireNewTCRisAboveCCR() {}
-    fn _requireNewICRisAboveOldICR() {}
     fn _requireICRisAboveCCR() {}
     fn _requireICRisAboveMCR() {}
     fn _requireValidMaxFeePercentage() {}
