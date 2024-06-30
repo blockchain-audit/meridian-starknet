@@ -104,6 +104,7 @@
         LUSDDebt = LUSDDebt += amount;
         ActivePoolLUSDDebtUpdated(LUSDDebt);
     }
+
     #[external]
     fn decreaseLUSDDebt(amount: u256) {
         requireCallerIsBOorTroveMorSP();
