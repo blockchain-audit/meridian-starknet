@@ -2,6 +2,8 @@
 #[starknet::contract]
 use array::ArrayTrait;
 use starknet::ContractAddress;
+use starknet::syscalls::storage_read;
+use starknet::syscalls::storage_write;
 mod TroveManager {
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -247,4 +249,13 @@ mod TroveManager {
         return rewardSnapshots[_borrower].ETH < L_ETH && Troves[_borrower].status == Status.active;
     }
 
+
+    fn _removeStake( _borrower:felt252)  {
+
+
+        let stake = storage_read(_borrower);
+        totalStakes = totalStakes - stake;
+        storage_write(borrower, 0);
+    
+    }
 }
