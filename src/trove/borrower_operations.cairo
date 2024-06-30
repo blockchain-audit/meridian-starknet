@@ -1,5 +1,6 @@
+
 use starknet::ContractAddress;
-use trove::interfaces::IBorrowerOperations;
+use trove::interfaces::IBorrowerOperations;\
 
 #[starknet::contract]
 mod BorrowerOperations {
@@ -151,14 +152,13 @@ mod BorrowerOperations {
         let caller = get_caller_address();
         collSurplusPool.claimColl(caller);
     }
+
     fn _triggerBorrowingFee() {}
     fn _getUSDValue() {}
     fn _getCollChange() {}
     fn _updateTroveFromAdjustment() {}
     fn _moveTokensAndETHfromAdjustment() {}
     fn _activePoolAddColl() {}
-    fn _withdrawLUSD() {}
-    fn _repayLUSD() {}
     fn _requireNotInRecoveryMode() {}
 
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
@@ -169,10 +169,6 @@ mod BorrowerOperations {
     }
     fn _requireAtLeastMinNetDebt(newICR: u256, oldICR: u256) {
         assert(newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
-    }
-
-    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
-        assert(_newICR >= oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
 
     fn _requireAtLeastMinNetDebt(const netDebt: u256)  {
@@ -290,3 +286,6 @@ mod BorrowerOperations {
     fn main() {}
 
 }
+
+
+
