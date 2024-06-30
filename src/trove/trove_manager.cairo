@@ -3,6 +3,7 @@ use debug::PrintTrait;
 use starknet::ContractAddress;
 use super ::{IActivePool,IDefaultPool,IPriceFeed}
 use super :: {stabilityPool}
+use utils::safeMath
 import StructTroveManager as structs_trove
 //we need to connect this smart contract to safeMath contract 
 #[starknet::contract]
@@ -20,7 +21,7 @@ mod TroveManager {
         vars.price =priceFeed.fetchPrice();
         //מחזיר את הטוטל LUSD
         vars.LUSDInStabPool = stabilityPoolCached.getTotalLUSDDeposits();
-        //who is function _checkRecoveryMode
+        //who is function _checkRecoveryMode 
         vars.recoveryModeAtStart = _checkRecoveryMode(vars.price);
         if vars.recoveryModeAtStart{
             totals = getTotalFromBatchLiquidate_RecoveryMode(activePoolCached, defaultPoolCached, vars.price, vars.LUSDInStabPool, troveArray);
@@ -38,9 +39,14 @@ mod TroveManager {
         vars.liquidatedDebt = totals.totalDebtInSequence;
         vars.liquidatedColl =
             totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(totals.totalCollSurplus);
-        // emit Liquidation(
-        //     vars.liquidatedDebt, vars.liquidatedColl, totals.totalCollGasCompensation, totals.totalLUSDGasCompensation
-        // );
+        emit Liquidation(
+            vars.liquidatedDebt, vars.liquidatedColl, totals.totalCollGasCompensation, totals.totalLUSDGasCompensation
+        );
+        self.emit(Liquidation { _liquidatedDebt: vars.liquidatedDebt, _liquidatedColl:  vars.liquidatedColl,_LUSDGasCompensation: totals.totalLUSDGasCompensation});
+        _liquidatedDebt: felt252,
+        _liquidatedColl:felt252,
+        _collGasCompensation:felt252,
+        _LUSDGasCompensation:felt252,
         // Send gas compensation to caller
         // sendGasCompensation(
         //     activePoolCached, msg.sender, totals.totalLUSDGasCompensation, totals.totalCollGasCompensation
