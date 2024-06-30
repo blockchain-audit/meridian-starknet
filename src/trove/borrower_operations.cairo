@@ -154,7 +154,6 @@ mod BorrowerOperations {
     fn _activePoolAddColl() {}
     fn _withdrawLUSD() {}
     fn _repayLUSD() {}
-    fn _requireSingularCollChange() {}
     fn _requireNotInRecoveryMode() {}
 
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
@@ -173,11 +172,6 @@ mod BorrowerOperations {
 
     fn _requireAtLeastMinNetDebt(const netDebt: u256)  {
         assert(netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum");
-    }
-
-    #[view]
-    fn _requireSingularCollChange(const collWithdrawal: u256) {
-        assert(msg.value == 0 || collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
     }
 
     #[view]
