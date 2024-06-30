@@ -255,7 +255,6 @@ mod BorrowerOperations {
         assert(_LUSDChange > 0, "BorrowerOps: Debt increase requires non-zero debtChange");
     }
 
-<<<<<<< HEAD
     fn _requireICRisAboveMCR(const newICR:felt256){
         assert(newICR >= MCR, "BorrowerOps: An operation that would result in ICR < MCR is not permitted");
     }
@@ -286,30 +285,6 @@ mod BorrowerOperations {
             }
     }
 
-=======
-    fn _requireValidMaxFeePercentage(const maxFeePercentage :u256, const isRecoveryMode bool) {
-        if isRecoveryMode {
-            assert(maxFeePercentage <= DECIMAL_PRECISION, "Max fee percentage must less than or equal to 100%");
-        } else {
-            assert(
-                _maxFeePercentage >= BORROWING_FEE_FLOOR && maxFeePercentage <= DECIMAL_PRECISION,
-                "Max fee percentage must be between 0.5% and 100%"
-            );
-        }
-    }
-    #[view]
-    fn _requireSufficientLUSDBalance( lusdToken ILUSDToken, borrower ContractAddress,  debtRepayment :u256) {
-        assert(
-            lusdToken.balanceOf(borrower) >= debtRepayment,
-            "BorrowerOps: Caller doesnt have enough LUSD to make repayment"
-        );
-    }
-    #[view]
-    fn _requireCallerIsStabilityPool()   {
-        assert(msg.sender == stabilityPoolAddress, "BorrowerOps: Caller is not Stability Pool");
-    }
-
-
->>>>>>> f5e1003b15a80a7ed32f8f4b6fc9f6b01b39006e
     fn main() {}
+}
 
