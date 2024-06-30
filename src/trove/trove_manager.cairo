@@ -238,6 +238,25 @@ mod TroveManager {
         ETHLot: felt252,
         cancelledPartial: bool,
     }
+
+    fn _addLiquidationValuesToTotals(
+        const oldTotals:LiquidationTotals,
+        const singleLiquidation:LiquidationValues
+        ) -> (newTotals:LiquidationTotals){
+            newTotals.totalCollGasCompensation = oldTotals.totalCollGasCompensation + singleLiquidation.collGasCompensation;
+            newTotals.totalLUSDGasCompensation = oldTotals.totalLUSDGasCompensation + singleLiquidation.LUSDGasCompensation;
+            newTotals.totalDebtInSequence = oldTotals.totalDebtInSequence + singleLiquidation.entireTroveDebt;
+            newTotals.totalCollInSequence = oldTotals.totalCollInSequence + singleLiquidation.entireTroveColl;
+            newTotals.totalDebtToOffset = oldTotals.totalDebtToOffset + singleLiquidation.debtToOffset;
+            newTotals.totalCollToSendToSP = oldTotals.totalCollToSendToSP + singleLiquidation.collToSendToSP;
+            newTotals.totalDebtToRedistribute = oldTotals.totalDebtToRedistribute + singleLiquidation.debtToRedistribute;
+            newTotals.totalCollToRedistribute = oldTotals.totalCollToRedistribute + singleLiquidation.collToRedistribute;
+            newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
+
+        newTotals;
+    }
+
+
     #[view]
     fn hasPendingRewards(_borrower:felt252)  -> bool {
         // /*
