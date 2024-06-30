@@ -145,7 +145,12 @@ mod BorrowerOperations {
         _adjustTrove(msg.sender, 0, LUSDAmount, false, upperHint, lowerHint, 0);
     }
     fn closeTrove() {}
-    fn claimCollateral() {}
+
+    #[external]
+    fn claimCollateral() {
+        let caller = get_caller_address();
+        collSurplusPool.claimColl(caller);
+    }
     fn _triggerBorrowingFee() {}
     fn _getUSDValue() {}
     fn _getCollChange() {}
