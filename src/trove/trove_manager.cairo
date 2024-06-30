@@ -1,51 +1,71 @@
-// %lang starknet
+#[starknet::contract]
 
-// from starkware.starknet.common.syscalls import get_caller_address
-// //from starkware.cairo.common.cairo_builtins import HashBuiltin
-// // from starkware.cairo.common.cairo_builtins import HashBuiltin
-// // from starkware.cairo.common.syscalls import get_caller_address
-// // use starknet::ContractAddress;
-// // use openzeppelin::access::ownable::library {Ownable};
-// //{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
-// fn setAddresses(
-//     ContractAddress _borrowerOperationsAddress,
-//     ContractAddress _activePoolAddress,
-//     ContractAddress _defaultPoolAddress,
-//     ContractAddress _stabilityPoolAddress,
-//     ContractAddress _gasPoolAddress,
-//     ContractAddress _collSurplusPoolAddress,
-//     ContractAddress _priceFeedAddress,
-//     ContractAddress _lusdTokenAddress,
-//     ContractAddress _sortedTrovesAddress,
-//     ContractAddress _lqtyTokenAddress,
-//     ContractAddress _lqtyStakingAddress)
-//     {
-     
-//         //assert_only_owner();
-//      borrowerOperationsAddress = _borrowerOperationsAddress;
-//      activePool = IActivePool(_activePoolAddress);
-//      defaultPool = IDefaultPool(_defaultPoolAddress);
-//      stabilityPool = IStabilityPool(_stabilityPoolAddress);
-//      gasPoolAddress = _gasPoolAddress;
-//      collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
-//      priceFeed = IPriceFeed(_priceFeedAddress);
-//      lusdToken = ILUSDToken(_lusdTokenAddress);
-//      sortedTroves = ISortedTroves(_sortedTrovesAddress);
-//      lqtyToken = ILQTYToken(_lqtyTokenAddress);
-//      lqtyStaking = ILQTYStaking(_lqtyStakingAddress);
+mod TroveManager {
+ use starknet::ContractAddress;
+ use openzeppelin::access::ownable::library {Ownable};
+ use ../interfaces::{ILQTYToken,IPriceFeed,IStabilityPool,ITroveManager};
+ use trove::structs_trova_manager;
+ use trove::event_trove_manager;
 
-//      self.emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
-//      self.emit ActivePoolAddressChanged(_activePoolAddress);
-//      self.emit DefaultPoolAddressChanged(_defaultPoolAddress);
-//      self.emit StabilityPoolAddressChanged(_stabilityPoolAddress);
-//      self.emit GasPoolAddressChanged(_gasPoolAddress);
-//      self.emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
-//      self.emit PriceFeedAddressChanged(_priceFeedAddress);
-//      self.emit LUSDTokenAddressChanged(_lusdTokenAddress);
-//      self.emit SortedTrovesAddressChanged(_sortedTrovesAddress);
-//      self.emit LQTYTokenAddressChanged(_lqtyTokenAddress);
-//      self.emit LQTYStakingAddressChanged(_lqtyStakingAddress);
-      
-//    //  renounce_ownership();
+ #[storage]
+  struct TroveManager {
+        borrowerOperationsAddress: ContractAddress,
+        stabilityPool:IStabilityPool,
+        priceFeed: IPriceFeed,
+        lqtyToken: ILQTYToken 
+    }
 
-// }
+ #[abi(embed_v0)]
+   impl TroveManager of super::ITroveManager<ContractState> 
+   {
+
+       fn setAddresses(
+         _borrowerOperationsAddress: ContractAddress,
+         _activePoolAddress: ContractAddress,
+         _defaultPoolAddress: ContractAddress,
+         _stabilityPoolAddress: ContractAddress,
+         _gasPoolAddress: ContractAddress,
+         _collSurplusPoolAddress: ContractAddress,
+         _priceFeedAddress: ContractAddress,
+         _lusdTokenAddress: ContractAddress,
+         _sortedTrovesAddress: ContractAddress,
+         _lqtyTokenAddress: ContractAddress,
+         _lqtyStakingAddress: ContractAddress
+        ) 
+        {
+         assert_only_owner();
+
+         let troveManager = TroveManager {
+            borrowerOperationsAddress: _borrowerOperationsAddress,
+            lqtyToken: ILQTYToken(_lqtyTokenAddress),
+            stabilityPool: IStabilityPool(_stabilityPoolAddress),
+            priceFeed: IPriceFeed(_priceFeedAddress),
+         };
+        
+         let contractsCache = ContractsCache {
+           activePool: IActivePool(_activePoolAddress),
+           defaultPool : IDefaultPool(_defaultPoolAddress),
+           lusdToken : ILUSDToken(_lusdTokenAddress),
+           lqtyStaking : ILQTYStaking(_lqtyStakingAddress),
+           sortedTroves :ISortedTroves(_sortedTrovesAddress),
+           collSurplusPool: ICollSurplusPool(_collSurplusPoolAddress),
+           gasPoolAddress: _gasPoolAddress, 
+        };
+
+        self.emit(BorrowerOperationsAddressChanged {_newBorrowerOperationsAddress:_borrowerOperationsAddress});
+        self.emit (ActivePoolAddressChanged {_activePoolAddress:_activePoolAddress});
+        self.emit (DefaultPoolAddressChanged {_defaultPoolAddress:_defaultPoolAddress});
+        self.emit (StabilityPoolAddressChanged {_stabilityPoolAddress:_stabilityPoolAddress});
+        self.emit (GasPoolAddressChanged {_gasPoolAddress:_gasPoolAddress});
+        self.emit (CollSurplusPoolAddressChanged {_collSurplusPoolAddress:_collSurplusPoolAddress});
+        self.emit (PriceFeedAddressChanged {_newPriceFeedAddress:_priceFeedAddress});
+        self.emit (LUSDTokenAddressChanged {_newLUSDTokenAddress:_lusdTokenAddress});
+        self.emit (SortedTrovesAddressChanged {_sortedTrovesAddress:_sortedTrovesAddress});
+        self.emit (LQTYTokenAddressChanged{_lqtyTokenAddress: _lqtyTokenAddress});
+        self.emit (LQTYStakingAddressChanged {_lqtyStakingAddress:_lqtyStakingAddress});
+
+        renounce_ownership();
+
+      }
+    }
+}
