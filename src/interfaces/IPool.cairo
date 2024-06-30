@@ -1,8 +1,8 @@
-#[starknet::interface] :
-trait IPool { 
+#[starknet::interface]
+trait IPool {
     use openzeppelin::token::erc20::{IERC20};
     use starknet::ContractAddress;
-    // Functions 
+    // Functions
     #[external]
     fn getETH()->(felt252);
     #[external]
