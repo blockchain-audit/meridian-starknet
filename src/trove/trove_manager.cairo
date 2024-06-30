@@ -1,5 +1,3 @@
-
-
 #[starknet::contract]
 use array::ArrayTrait;
 use starknet::ContractAddress;
@@ -278,8 +276,7 @@ mod TroveManager {
         storage_write(borrower, 0);
     
     }
-
-    fn _getTotalsFromLiquidateTrovesSequence_RecoveryMode(_contractsCache:ContractsCache //memory
+fn _getTotalsFromLiquidateTrovesSequence_RecoveryMode(_contractsCache:ContractsCache //memory
         ,mut _price:u256, mut _LUSDInStabPool:u256, mut _n:u256 )-> totals:LiquidationTotals{ //memory
 
 mut vars:LocalVariables_LiquidationSequence;//memory
@@ -354,4 +351,20 @@ loop{
 }
 
 }
-}}
+}
+
+
+#[external(v0)]
+fn getTroveOwnersCount(self: @ContractState) -> u256 {
+    return TroveOwners.length;
+}
+
+#[external(v0)]
+fn getTroveFromTroveOwnersArray(self: @ContractState, index:u256) -> ContractAddress{
+    return TroveOwners[index];
+}
+
+
+
+
+}
