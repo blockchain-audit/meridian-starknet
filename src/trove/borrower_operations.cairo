@@ -178,14 +178,36 @@ mod BorrowerOperations {
         assert(_newICR >= _oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
     #[view]
+fn _requireSingularCollChange(const collWithdrawal: u256) {
+assert(msg.value == 0 || collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
+}
+
+#[view]
 fn _requireCallerIsBorrower( borrower: ContractAddress) {
 assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
 }
 
 #[view]
 fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
-assert(msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,"BorrowerOps: There must be either a collateral change or a debt change");
+assert(
+msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,
+"BorrowerOps: There must be either a collateral change or a debt change"
+);
 }
+
+#[view]
+fn _requireTroveisActive(ITroveManager troveManager, address borrower)  {
+status: u256 = troveManager.getTroveStatus(borrower);
+assert(status == 1, "BorrowerOps: Trove does not exist or is closed");
+}
+
+#[view]
+function _requireTroveisNotActive(ITroveManager _troveManager, address _borrower)  {
+status:u256 = _troveManager.getTroveStatus(_borrower);
+assert(status != 1, "BorrowerOps: Trove is active");
+}
+
+
 
     fn main() {}
 
