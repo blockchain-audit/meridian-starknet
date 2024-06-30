@@ -154,15 +154,7 @@ mod BorrowerOperations {
     fn _activePoolAddColl() {}
     fn _withdrawLUSD() {}
     fn _repayLUSD() {}
-    fn _requireSingularCollChange() {}
-    fn _requireCallerIsBorrower() {}
-    fn _requireNonZeroAdjustment() {}
-    fn _requireTroveisActive() {}
-    fn _requireTroveisNotActive() {}
-    fn _requireNonZeroDebtChange() {}
     fn _requireNotInRecoveryMode() {}
-    fn _requireValidAdjustmentInCurrentMode() {}
-    fn _requireNoCollWithdrawal() {}
 
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
         assert(
@@ -180,16 +172,6 @@ mod BorrowerOperations {
 
     fn _requireAtLeastMinNetDebt(const netDebt: u256)  {
         assert(netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum");
-    }
-
-    #[view]
-    fn _requireSingularCollChange(const collWithdrawal: u256) {
-        assert(msg.value == 0 || collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
-    }
-
-    #[view]
-    fn _requireCallerIsBorrower( borrower: ContractAddress) {
-        assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
     }
 
     #[view]
@@ -212,13 +194,7 @@ mod BorrowerOperations {
         assert(status != 1, "BorrowerOps: Trove is active");
     }
 
-
     fn _requireNewTCRisAboveCCR() {}
-    fn _requireICRisAboveCCR() {}
-    fn _requireICRisAboveMCR() {}
-    fn _requireValidMaxFeePercentage() {}
-    fn _requireSufficientLUSDBalance() {}
-    fn _requireCallerIsStabilityPool() {}
     fn _getNewTCRFromTroveChange() {}
     fn _getNewTroveAmounts() {}
     fn _getNewICRFromTroveChange() {}
@@ -227,10 +203,6 @@ mod BorrowerOperations {
     
     fn _requireNewICRisAboveOldICR(newICR: u256, oldICR: u256) {
         assert(_newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
-    }
-    #[view]
-    fn _requireCallerIsBorrower(borrower: ContractAddress) {
-        assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
     }
 
     fn _requireAtLeastMinNetDebt(netDebt: u256) {
@@ -250,13 +222,6 @@ mod BorrowerOperations {
         assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
     }
 
-    #[view]
-    fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
-        assert(
-            msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,
-            "BorrowerOps: There must be either a collateral change or a debt change"
-        );
-    }
     fn _requireNoCollWithdrawal(const ollWithdrawal :u256)  {
         assert(_collWithdrawal == 0, "BorrowerOps: Collateral withdrawal not permitted Recovery Mode");
     }
@@ -315,7 +280,6 @@ mod BorrowerOperations {
     fn _requireCallerIsStabilityPool()   {
         assert(msg.sender == stabilityPoolAddress, "BorrowerOps: Caller is not Stability Pool");
     }
-
 
     fn main() {}
 
