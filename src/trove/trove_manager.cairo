@@ -29,7 +29,7 @@ fn _getTotalsFromLiquidateTrovesSequence_RecoveryMode(_contractsCache:ContractsC
                    
                     if vars.ICR >= MCR && vars.remainingLUSDInStabPool == 0{
                         
-                        break;
+                        break();
                     } 
 
                     let mut TCR:u256 = LiquityMath._computeCR(vars.entireSystemColl, vars.entireSystemDebt, _price);
@@ -44,14 +44,14 @@ fn _getTotalsFromLiquidateTrovesSequence_RecoveryMode(_contractsCache:ContractsC
                         _price
                     );
 
-                    // Update aggregate trackers
+                    
                     vars.remainingLUSDInStabPool = vars.remainingLUSDInStabPool.sub(singleLiquidation.debtToOffset);
                     vars.entireSystemDebt = vars.entireSystemDebt.sub(singleLiquidation.debtToOffset);
                     vars.entireSystemColl = vars.entireSystemColl.sub(singleLiquidation.collToSendToSP).sub(
                         singleLiquidation.collGasCompensation
                     ).sub(singleLiquidation.collSurplus);
 
-                    // Add liquidation values to their respective running totals
+                  
                     totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
 
                     vars.backToNormalMode =
@@ -63,11 +63,11 @@ fn _getTotalsFromLiquidateTrovesSequence_RecoveryMode(_contractsCache:ContractsC
 
                     vars.remainingLUSDInStabPool = vars.remainingLUSDInStabPool.sub(singleLiquidation.debtToOffset);
 
-                    // Add liquidation values to their respective running totals
+                   
                     totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
                 } else {
-                    break;
-                } // break if the loop reaches a Trove with ICR >= MCR
+                    break();
+                    
 
                 vars.user = nextUser;
 
