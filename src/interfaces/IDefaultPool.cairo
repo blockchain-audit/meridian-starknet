@@ -11,7 +11,7 @@ trait IDefaultPool<TContractState> : IPool {
     enum Event {
         TroveManagerAddressChanged: TroveManagerAddressChanged,
         DefaultPoolLUSDDebtUpdated: DefaultPoolLUSDDebtUpdated,
-        DefaultPoolSTARKBalanceUpdated: DefaultPoolSTARKBalanceUpdated
+        DefaultPoolSTARKBalanceUpdated: DefaultPoolSTARKBalanceUpdated,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -32,6 +32,7 @@ trait IDefaultPool<TContractState> : IPool {
         _STARK: u256,
     }
 
-    fn sendSTARKToActivePool(ref self: TContractState, _amount: u256) external;
+    #[external(v0)]
+    fn sendSTARKToActivePool(ref self: TContractState, _amount: u256);
 
 }
