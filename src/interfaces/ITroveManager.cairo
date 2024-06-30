@@ -1,3 +1,4 @@
+
 use starknet::ContractAddress;
 
 #[starknet::interface]
@@ -167,3 +168,4 @@ trait ITroveManager<TContractState> {
 
     fn main(self: @TContractState);
 }
+
