@@ -1,3 +1,4 @@
+
 #[starknet::interface]
 trait IRewardsPool<TContractState> {
     fn setParams(self: TContractState, _lqtyTokenAddress: felt252,  _uniTokenAddress: felt252, _duration: u256);

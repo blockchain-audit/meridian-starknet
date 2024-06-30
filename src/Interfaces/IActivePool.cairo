@@ -1,3 +1,4 @@
+
 #[starknet::interface]
 trait IActivePool<ContractState>{
     // --- Functions ---
