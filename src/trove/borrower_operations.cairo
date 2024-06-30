@@ -192,14 +192,14 @@ mod BorrowerOperations {
     }
 
     #[view]
-    fn _requireTroveisActive(ITroveManager troveManager, address borrower) internal view {
+    fn _requireTroveisActive( troveManager ITroveManager,  borrower ContractAddress )   {
         status: u256 = troveManager.getTroveStatus(borrower);
         assert(status == 1, "BorrowerOps: Trove does not exist or is closed");
     }
 
     #[view]
-    function _requireTroveisNotActive(ITroveManager _troveManager, address _borrower) internal view {
-        status:u256 = _troveManager.getTroveStatus(_borrower);
+    function _requireTroveisNotActive( troveManager ITroveManager,  borrower ContractAddress)   {
+        status:u256 = troveManager.getTroveStatus(borrower);
         assert(status != 1, "BorrowerOps: Trove is active");
     }
 
@@ -254,6 +254,29 @@ mod BorrowerOperations {
     fn _requireNonZeroDebtChange(const  _LUSDChange :u256)    {
         assert(_LUSDChange > 0, "BorrowerOps: Debt increase requires non-zero debtChange");
     }
+
+    fn _requireValidMaxFeePercentage(const maxFeePercentage :u256, const isRecoveryMode bool) {
+        if isRecoveryMode {
+            assert(maxFeePercentage <= DECIMAL_PRECISION, "Max fee percentage must less than or equal to 100%");
+        } else {
+            assert(
+                _maxFeePercentage >= BORROWING_FEE_FLOOR && maxFeePercentage <= DECIMAL_PRECISION,
+                "Max fee percentage must be between 0.5% and 100%"
+            );
+        }
+    }
+    #[view]
+    fn _requireSufficientLUSDBalance( lusdToken ILUSDToken, borrower ContractAddress,  debtRepayment :u256) {
+        assert(
+            lusdToken.balanceOf(borrower) >= debtRepayment,
+            "BorrowerOps: Caller doesnt have enough LUSD to make repayment"
+        );
+    }
+    #[view]
+    fn _requireCallerIsStabilityPool()   {
+        assert(msg.sender == stabilityPoolAddress, "BorrowerOps: Caller is not Stability Pool");
+    }
+
 
     fn main() {}
 }
