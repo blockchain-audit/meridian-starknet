@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // import "./Interfaces/IActivePool.sol";
 // import "./Dependencies/SafeMath.sol";
 // import "./Dependencies/Ownable.sol";
@@ -133,6 +131,4 @@
 //         emit ActivePoolETHBalanceUpdated(ETH);
 //     }
 // }
-
->>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
 

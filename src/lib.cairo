@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #[starknet::interface]
 pub trait IHelloStarknet<TContractState> {
     fn increase_balance(ref self: TContractState, amount: felt252);
@@ -24,7 +23,7 @@ mod HelloStarknet {
         }
     }
 }
-=======
+//=======
 #[starknet::interface]
 pub trait IHelloStarknet<TContractState> {
     fn increase_balance(ref self: TContractState, amount: felt252);
@@ -51,5 +50,4 @@ mod HelloStarknet {
     }
 }
 
-pub mod utils;
->>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
+

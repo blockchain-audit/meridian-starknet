@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-=======
 #[starknet::library]
 // use utils::safe_math::SafeMath;
 
@@ -106,4 +103,4 @@ mod LiquityMath {
         }     
     }
 }
->>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
+

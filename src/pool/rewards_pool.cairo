@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-// renamed from unipool
-
-
-=======
 // renamed from unipool
 
 use openzeppelin::token::erc20::{IERC20};
@@ -112,4 +107,4 @@ mod Unipool of super::IUnipool<ContractState> {
         }
     }
 }
->>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
+

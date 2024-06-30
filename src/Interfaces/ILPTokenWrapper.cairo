@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-=======
 #[starknet::interface]
 trait ILPTokenWrapper<TContractState> {
     fn totalSupply(self: @TContractState) -> u256;
@@ -8,4 +5,4 @@ trait ILPTokenWrapper<TContractState> {
     fn stake(ref self: TContractState, amount: u256);
     fn withdraw(ref self: TContractState, amount: u256);
 }
->>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
+

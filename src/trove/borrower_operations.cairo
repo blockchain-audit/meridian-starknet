@@ -132,13 +132,13 @@ mod BorrowerOperations {
     fn openTrove() {}
     fn addColl() {}
     fn moveETHGainToTrove() {}
-<<<<<<< HEAD
+
     fn withdrawColl() {}
     fn withdrawLUSD() {}
     fn repayLUSD() {}
     fn closeTrove() {}
     fn claimCollateral() {}
-=======
+//=======
     #[external(v0)]
     fn withdrawColl(collWithdrawal:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
         _adjustTrove(msg.sender, collWithdrawal, 0, false, upperHint, lowerHint, 0);
@@ -158,7 +158,7 @@ mod BorrowerOperations {
         let caller = get_caller_address();
         collSurplusPool.claimColl(caller);
     }
->>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
+
     fn _triggerBorrowingFee() {}
     fn _getUSDValue() {}
     fn _getCollChange() {}
@@ -167,7 +167,6 @@ mod BorrowerOperations {
     fn _activePoolAddColl() {}
     fn _withdrawLUSD() {}
     fn _repayLUSD() {}
-<<<<<<< HEAD
     fn _requireSingularCollChange() {}
     fn _requireCallerIsBorrower() {}
     fn _requireNonZeroAdjustment() {}
@@ -191,7 +190,7 @@ mod BorrowerOperations {
     fn _getNewICRFromTroveChange() {}
     fn _getNewNominalICRFromTroveChange() {}
     fn getCompositeDebt() {}
-=======
+//=======
     fn _requireNotInRecoveryMode() {}
 
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
@@ -203,7 +202,7 @@ mod BorrowerOperations {
     fn _requireAtLeastMinNetDebt(newICR: u256, oldICR: u256) {
         assert(newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
->>>>>>> bc72ff5a61cc30216d356898cdcda21881247bab
+
 
     fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
         assert(_newICR >= oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
@@ -322,8 +321,8 @@ mod BorrowerOperations {
     }
 
     fn main() {}
-<<<<<<< HEAD
-}
-=======
 
 }
+
+
+
