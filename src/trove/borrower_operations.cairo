@@ -133,13 +133,6 @@ mod BorrowerOperations {
     fn openTrove() {}
     fn addColl() {}
     fn moveETHGainToTrove() {}
-
-    fn withdrawColl() {}
-    fn withdrawLUSD() {}
-    fn repayLUSD() {}
-    fn closeTrove() {}
-    fn claimCollateral() {}
-//=======
     #[external(v0)]
     fn withdrawColl(collWithdrawal:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
         _adjustTrove(msg.sender, collWithdrawal, 0, false, upperHint, lowerHint, 0);
@@ -166,32 +159,6 @@ mod BorrowerOperations {
     fn _updateTroveFromAdjustment() {}
     fn _moveTokensAndETHfromAdjustment() {}
     fn _activePoolAddColl() {}
-    fn _withdrawLUSD() {}
-    fn _repayLUSD() {}
-    fn _requireSingularCollChange() {}
-    fn _requireCallerIsBorrower() {}
-    fn _requireNonZeroAdjustment() {}
-    fn _requireTroveisActive() {}
-    fn _requireTroveisNotActive() {}
-    fn _requireNonZeroDebtChange() {}
-    fn _requireNotInRecoveryMode() {}
-    fn _requireValidAdjustmentInCurrentMode() {}
-    fn _requireNoCollWithdrawal() {}
-    fn _requireValidLUSDRepayment() {}
-    fn _requireAtLeastMinNetDebt() {}
-    fn _requireNewTCRisAboveCCR() {}
-    fn _requireNewICRisAboveOldICR() {}
-    fn _requireICRisAboveCCR() {}
-    fn _requireICRisAboveMCR() {}
-    fn _requireValidMaxFeePercentage() {}
-    fn _requireSufficientLUSDBalance() {}
-    fn _requireCallerIsStabilityPool() {}
-    fn _getNewTCRFromTroveChange() {}
-    fn _getNewTroveAmounts() {}
-    fn _getNewICRFromTroveChange() {}
-    fn _getNewNominalICRFromTroveChange() {}
-    fn getCompositeDebt() {}
-//=======
     fn _requireNotInRecoveryMode() {}
 
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
@@ -202,11 +169,6 @@ mod BorrowerOperations {
     }
     fn _requireAtLeastMinNetDebt(newICR: u256, oldICR: u256) {
         assert(newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
-    }
-
-
-    fn _requireNewICRisAboveOldICR( const newICR:u256,  const oldICRu256)  {
-        assert(_newICR >= oldICR,"BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
 
     fn _requireAtLeastMinNetDebt(const netDebt: u256)  {
