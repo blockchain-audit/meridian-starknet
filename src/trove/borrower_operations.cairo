@@ -263,12 +263,13 @@ mod BorrowerOperations {
         assert(newICR >= CCR, "BorrowerOps: Operation must leave trove with ICR >= CCR");
     }
 
-    #[view]
+   
     fn _requireValidAdjustmentInCurrentMode(
                 isRecoveryMode:bool,
                 collWithdrawal:felt256,
                 isDebtIncrease:bool,
-                vars:LocalVariables_adjustTrove 
+                vars:LocalVariables_adjustTrove,
+                self: @ContractState
         ){
             if (isRecoveryMode){
                 _requireNoCollWithdrawal(collWithdrawal);
