@@ -2,6 +2,8 @@
 #[starknet::contract]
 use array::ArrayTrait;
 use starknet::ContractAddress;
+use starknet::syscalls::storage_read;
+use starknet::syscalls::storage_write;
 mod TroveManager {
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -235,5 +237,25 @@ mod TroveManager {
         LUSDLot: felt252,
         ETHLot: felt252,
         cancelledPartial: bool,
+    }
+    #[view]
+    fn hasPendingRewards(_borrower:felt252)  -> bool {
+        // /*
+        // * A Trove has pending rewards if its snapshot is less than the current rewards per-unit-staked sum:
+        // * this indicates that rewards have occured since the snapshot was made, and the user therefore has
+        // * pending rewards
+        // */
+
+        return rewardSnapshots[_borrower].ETH < L_ETH && Troves[_borrower].status == Status.active;
+    }
+
+
+    fn _removeStake( _borrower:felt252)  {
+
+
+        let stake = storage_read(_borrower);
+        totalStakes = totalStakes - stake;
+        storage_write(borrower, 0);
+    
     }
 }
