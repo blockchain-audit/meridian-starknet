@@ -1,6 +1,5 @@
 use starknet::ContractAddress;
-
-
+use interfaces::{IActivePool,ILUSDToken}
 #[starknet::contract]
 mod BorrowerOperations {
     #[derive(Copy, Drop)]
@@ -142,9 +141,31 @@ mod BorrowerOperations {
     fn _getCollChange() {}
     fn _updateTroveFromAdjustment() {}
     fn _moveTokensAndETHfromAdjustment() {}
-    fn _activePoolAddColl() {}
-    fn _withdrawLUSD() {}
-    fn _repayLUSD() {}
+    // Send STARK to Active Pool and increase its recorded STARK balance
+    fn _activePoolAddColl(activePool:IActivePool,amount:felt252)internal {
+        bool success = ContractAddress(activePool).call{value: amount};
+        assert(success, 'BorrowerOps: Sending STRAK to ActivePool failed');
+    }
+    // Issue the specified amount of LUSD to _account and increases the total active debt (_netDebtIncrease potentially includes a LUSDFee)
+
+    fn _withdrawLUSD() {
+
+    function _withdrawLUSD(
+        IActivePool _activePool,
+        ILUSDToken _lusdToken,
+        address _account,
+        uint256 _LUSDAmount,
+        uint256 _netDebtIncrease
+    ) internal {
+        _activePool.increaseLUSDDebt(_netDebtIncrease);
+        _lusdToken.mint(_account, _LUSDAmount);
+    }
+    }
+    // Burn the specified amount of LUSD from _account and decreases the total active debt
+    fn _repayLUSD(activePool:IActivePool,lusdToken:ILUSDToken,account:ContractAddress,LUSD:felt252) {
+        activePool.decreaseLUSDDebt(LUSD);
+        lusdToken.burn(account, LUSD);
+    }
     fn _requireSingularCollChange() {}
     fn _requireCallerIsBorrower() {}
     fn _requireNonZeroAdjustment() {}
