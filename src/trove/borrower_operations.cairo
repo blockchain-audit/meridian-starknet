@@ -196,11 +196,40 @@ mod BorrowerOperations {
     }
 
     fn _requireNewTCRisAboveCCR() {}
-    fn _getNewTCRFromTroveChange() {}
+    fn _requireICRisAboveCCR() {}
+    fn _requireICRisAboveMCR() {}
+    fn _requireValidMaxFeePercentage() {}
+    fn _requireSufficientLUSDBalance() {}
+    fn _requireCallerIsStabilityPool() {}
+    
+
+    fn _getNewTCRFromTroveChange(collChange:u256, isCollIncrease:bool, debtChange:u256, isDebtIncrease:bool, price:u256) -> u256 {
+        let totalColl=getEntireSystemColl();
+        let totalDebt=getEntireSystemColl();
+        if totalColl==_isCollIncrease{
+            totalColl.add(_collChange);
+        }
+        else{
+        totalColl.sub(_collChange);
+        }
+        if totalColl==_isDebtIncrease{
+            totalDebt.add(_debtChange)
+        }
+        else{
+            totalDebt.sub(_debtChange);
+        }
+        let newTCR = LiquityMath.computeCR(totalColl, totalDebt, price);
+         newTCR
+        }
+
+       
     fn _getNewTroveAmounts() {}
     fn _getNewICRFromTroveChange() {}
     fn _getNewNominalICRFromTroveChange() {}
-    fn getCompositeDebt() {}
+    #[external(v0)]
+    fn getCompositeDebt(const debt: u256) -> u256 {
+        _getCompositeDebt(debt)
+    }
     
     fn _requireNewICRisAboveOldICR(newICR: u256, oldICR: u256) {
         assert(_newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
