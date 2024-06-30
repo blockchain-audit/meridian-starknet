@@ -1,4 +1,4 @@
-use starknet::ContractAddress;
+
 #[starknet::interface]
 trait IActivePool<ContractState>{
     // --- Functions ---
