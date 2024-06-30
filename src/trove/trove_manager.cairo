@@ -1,3 +1,4 @@
+
 use starknet::ContractAddress;
 
 
@@ -10,3 +11,5 @@ fn getTroveOwnersCount(self: @ContractState) -> u256 {
 fn getTroveFromTroveOwnersArray(self: @ContractState, index:u256) -> ContractAddress{
     return TroveOwners[index];
 }
+
+

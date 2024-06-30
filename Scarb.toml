@@ -17,4 +17,3 @@ sierra = true
 
 [scripts]
 test = "snforge test"
-
