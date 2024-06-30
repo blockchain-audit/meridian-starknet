@@ -132,11 +132,25 @@ mod BorrowerOperations {
     fn openTrove() {}
     fn addColl() {}
     fn moveETHGainToTrove() {}
-    fn withdrawColl() {}
-    fn withdrawLUSD() {}
-    fn repayLUSD() {}
+    #[external(v0)]
+    fn withdrawColl(collWithdrawal:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
+        _adjustTrove(msg.sender, collWithdrawal, 0, false, upperHint, lowerHint, 0);
+    }
+    #[external(v0)]
+    fn withdrawLUSD(maxFeePercentage:u256, LUSDAmount:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
+        _adjustTrove(msg.sender, 0, LUSDAmount, true, upperHint, lowerHint, maxFeePercentage);
+    }
+    #[external(v0)]
+    fn repayLUSD(LUSDAmount:u256, upperHint:ContractAddress, lowerHint:ContractAddress) {
+        _adjustTrove(msg.sender, 0, LUSDAmount, false, upperHint, lowerHint, 0);
+    }
     fn closeTrove() {}
-    fn claimCollateral() {}
+
+    #[external]
+    fn claimCollateral() {
+        let caller = get_caller_address();
+        collSurplusPool.claimColl(caller);
+    }
     fn _triggerBorrowingFee() {}
     fn _getUSDValue() {}
     fn _getCollChange() {}
@@ -145,15 +159,7 @@ mod BorrowerOperations {
     fn _activePoolAddColl() {}
     fn _withdrawLUSD() {}
     fn _repayLUSD() {}
-    fn _requireSingularCollChange() {}
-    fn _requireCallerIsBorrower() {}
-    fn _requireNonZeroAdjustment() {}
-    fn _requireTroveisActive() {}
-    fn _requireTroveisNotActive() {}
-    fn _requireNonZeroDebtChange() {}
     fn _requireNotInRecoveryMode() {}
-    fn _requireValidAdjustmentInCurrentMode() {}
-    fn _requireNoCollWithdrawal() {}
 
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
         assert(
@@ -174,17 +180,7 @@ mod BorrowerOperations {
     }
 
     #[view]
-    fn _requireSingularCollChange(const collWithdrawal: u256) {
-        assert(msg.value == 0 || collWithdrawal == 0, "BorrowerOperations: Cannot withdraw and add coll");
-    }
-
-    #[view]
-    fn _requireCallerIsBorrower( borrower: ContractAddress) {
-        assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
-    }
-
-    #[view]
-    fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
+    fn _requireNonZeroAdjustment(self: @ContractState, collWithdrawal: u256, LUSDChange: u256) {
         assert(
             msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,
             "BorrowerOps: There must be either a collateral change or a debt change"
@@ -192,17 +188,16 @@ mod BorrowerOperations {
     }
 
     #[view]
-    fn _requireTroveisActive( troveManager ITroveManager,  borrower ContractAddress )   {
+    fn _requireTroveisActive(self: @ContractState, troveManager ITroveManager,  borrower ContractAddress )   {
         status: u256 = troveManager.getTroveStatus(borrower);
         assert(status == 1, "BorrowerOps: Trove does not exist or is closed");
     }
 
     #[view]
-    function _requireTroveisNotActive( troveManager ITroveManager,  borrower ContractAddress)   {
+    function _requireTroveisNotActive(self: @ContractState,  troveManager ITroveManager,  borrower ContractAddress)   {
         status:u256 = troveManager.getTroveStatus(borrower);
         assert(status != 1, "BorrowerOps: Trove is active");
     }
-
 
     fn _requireNewTCRisAboveCCR() {}
     fn _requireICRisAboveCCR() {}
@@ -243,10 +238,6 @@ mod BorrowerOperations {
     fn _requireNewICRisAboveOldICR(newICR: u256, oldICR: u256) {
         assert(_newICR >= oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
-    #[view]
-    fn _requireCallerIsBorrower(borrower: ContractAddress) {
-        assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
-    }
 
     fn _requireAtLeastMinNetDebt(netDebt: u256) {
         assert(
@@ -254,24 +245,17 @@ mod BorrowerOperations {
         );
     }
     #[view]
-    fn _requireSingularCollChange(collWithdrawal: u256) {
+    fn _requireSingularCollChange(self: @ContractState, collWithdrawal: u256) {
         assert(
             msg.value == 0 || collWithdrawal == 0,
             "BorrowerOperations: Cannot withdraw and add coll"
         );
     }
     #[view]
-    fn _requireCallerIsBorrower(borrower: ContractAddress) {
+    fn _requireCallerIsBorrower(self: @ContractState, borrower: ContractAddress) {
         assert(msg.sender == borrower, "BorrowerOps: Caller must be the borrower for a withdrawal");
     }
 
-    #[view]
-    fn _requireNonZeroAdjustment(collWithdrawal: u256, LUSDChange: u256) {
-        assert(
-            msg.value != 0 || collWithdrawal != 0 || LUSDChange != 0,
-            "BorrowerOps: There must be either a collateral change or a debt change"
-        );
-    }
     fn _requireNoCollWithdrawal(const ollWithdrawal :u256)  {
         assert(_collWithdrawal == 0, "BorrowerOps: Collateral withdrawal not permitted Recovery Mode");
     }
@@ -289,6 +273,7 @@ mod BorrowerOperations {
 
     #[view]
     fn _requireValidAdjustmentInCurrentMode(
+                self: @ContractState, 
                 isRecoveryMode:bool,
                 collWithdrawal:felt256,
                 isDebtIncrease:bool,
@@ -320,17 +305,16 @@ mod BorrowerOperations {
         }
     }
     #[view]
-    fn _requireSufficientLUSDBalance( lusdToken ILUSDToken, borrower ContractAddress,  debtRepayment :u256) {
+    fn _requireSufficientLUSDBalance( self: @ContractState, lusdToken ILUSDToken, borrower ContractAddress,  debtRepayment :u256) {
         assert(
             lusdToken.balanceOf(borrower) >= debtRepayment,
             "BorrowerOps: Caller doesnt have enough LUSD to make repayment"
         );
     }
     #[view]
-    fn _requireCallerIsStabilityPool()   {
+    fn _requireCallerIsStabilityPool(self: @ContractState)   {
         assert(msg.sender == stabilityPoolAddress, "BorrowerOps: Caller is not Stability Pool");
     }
-
 
     fn main() {}
 
