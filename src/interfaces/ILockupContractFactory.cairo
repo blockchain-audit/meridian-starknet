@@ -3,25 +3,25 @@ use starknet:: ContractAddress;
 
     // #[external(v0)]
     // --Events--
-    #[event]
-    #[derive(Drop, Serde, Copy, starknet::Event)]
-    struct LQTYTokenAddressSet {
-        _lqtyTokenAddress: ContractAddress,
-    }
+    // #[event]
+    // #[derive(Drop, Serde, Copy, starknet::Event)]
+    // struct LQTYTokenAddressSet {
+    //     _lqtyTokenAddress: ContractAddress,
+    // }
 
-    #[event]
-    #[derive(Drop, Serde, Copy, starknet::Event)]
-     struct LockupContractDeployedThroughFactory{
-        _lockupContractAddress: ContractAddress, 
-        _beneficiary: ContractAddress, 
-        _unlockTime: u256, 
-        _deployer: ContractAddress,
-    }
+    // #[event]
+    // #[derive(Drop, Serde, Copy, starknet::Event)]
+    //  struct LockupContractDeployedThroughFactory{
+    //     _lockupContractAddress: ContractAddress, 
+    //     _beneficiary: ContractAddress, 
+    //     _unlockTime: u256, 
+    //     _deployer: ContractAddress,
+    // }
 
-    enum Events {
-        LockupContractDeployedThroughFactory: LockupContractDeployedThroughFactory,
-        LQTYTokenAddressSet: LQTYTokenAddressSet,
-    }
+    // enum Events {
+    //     LockupContractDeployedThroughFactory: LockupContractDeployedThroughFactory,
+    //     LQTYTokenAddressSet: LQTYTokenAddressSet,
+    // }
 
 #[starknet::interface]
 trait ILockupContractFactory {
