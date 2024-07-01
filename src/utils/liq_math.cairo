@@ -26,6 +26,7 @@ mod LiquityMath {
         else {b}          
     }
     #[generate_trait]
+<<<<<<< HEAD
     fn decMul(x: u256, y: u256)-> u256{
       
       let prod_xy:u256 = x*y;//mul(x,y);//SafeMath.mul(x,y); //
@@ -45,6 +46,9 @@ mod LiquityMath {
 
             let mut base:u256 = _base;
             let mut exp:u256  = _minutes;
+=======
+    fn _decPow( _base: u256, mut _minutes: u256)->u256{
+>>>>>>> c4207a5dca87ba0686d6e5ca5f85990988226bb1
 
             loop {
                 if exp <= 1 {
@@ -62,6 +66,7 @@ mod LiquityMath {
             };
             decMul(result, base)
         }
+<<<<<<< HEAD
 
     }
 
@@ -114,3 +119,8 @@ mod LiquityMath {
   
 
 
+=======
+    }
+}
+
+>>>>>>> c4207a5dca87ba0686d6e5ca5f85990988226bb1
