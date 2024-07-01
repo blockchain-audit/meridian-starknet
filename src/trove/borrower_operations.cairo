@@ -202,7 +202,12 @@ mod BorrowerOperations {
         lusdToken.burn(account, LUSD);
     }
 
-    fn _requireNotInRecoveryMode() {}
+    #[view]
+    fn _requireNotInRecoveryMode(_price: u256) {
+        assert(
+            !_checkRecoveryMode(_price), "BorrowerOps: Operation not permitted during Recovery Mode"
+        );
+    }
 
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
         assert(
