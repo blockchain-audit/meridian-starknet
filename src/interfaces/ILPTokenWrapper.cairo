@@ -1,6 +1,4 @@
-
 #[starknet::interface]
-
 trait ILPTokenWrapper<TContractState> {
     fn totalSupply(self: @TContractState) -> u256;
     fn balanceOf(self: @TContractState, account: felt252) -> u256;
