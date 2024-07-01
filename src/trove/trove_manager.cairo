@@ -259,8 +259,22 @@ mod TroveManager {
             + singleLiquidation.collToRedistribute;
         newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
 
-        newTotals;
-    }
+        fn _addLiquidationValuesToTotals(
+            const oldTotals:LiquidationTotals,
+            const singleLiquidation:LiquidationValues
+            ) -> (newTotals:LiquidationTotals){
+                newTotals.totalCollGasCompensation = oldTotals.totalCollGasCompensation + singleLiquidation.collGasCompensation;
+                newTotals.totalLUSDGasCompensation = oldTotals.totalLUSDGasCompensation + singleLiquidation.LUSDGasCompensation;
+                newTotals.totalDebtInSequence = oldTotals.totalDebtInSequence + singleLiquidation.entireTroveDebt;
+                newTotals.totalCollInSequence = oldTotals.totalCollInSequence + singleLiquidation.entireTroveColl;
+                newTotals.totalDebtToOffset = oldTotals.totalDebtToOffset + singleLiquidation.debtToOffset;
+                newTotals.totalCollToSendToSP = oldTotals.totalCollToSendToSP + singleLiquidation.collToSendToSP;
+                newTotals.totalDebtToRedistribute = oldTotals.totalDebtToRedistribute + singleLiquidation.debtToRedistribute;
+                newTotals.totalCollToRedistribute = oldTotals.totalCollToRedistribute + singleLiquidation.collToRedistribute;
+                newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
+
+            newTotals;
+        }
 
 
     #[view]
@@ -271,8 +285,8 @@ mod TroveManager {
         // * pending rewards
         // */
 
-        return rewardSnapshots[_borrower].ETH < L_ETH && Troves[_borrower].status == Status.active;
-    }
+            return rewardSnapshots[_borrower].ETH < L_ETH && Troves[_borrower].status == Status.active;
+        }
 
 
     fn _removeStake(_borrower: felt252) {
@@ -455,11 +469,27 @@ mod TroveManager {
                 totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
             } else {
                 break ();
+            }
                 vars.user = nextUser;
                 vars.i = vars.i + 1;
-            }
+            
         }
     }
+    fn _sendGasCompensation ( _activePool:IActivePool, _liquidator:address , _LUSD:uint256 , _ETH:uint256 ) {
+        if _LUSD > 0 {
+            lusdToken.returnFromPool(gasPoolAddress, _liquidator, _LUSD);
+        }
+
+        if _ETH > 0 {
+            _activePool.sendETH(_liquidator, _ETH);
+        }
+    }
+    fn _movePendingTroveRewardsToActivePool(_activePool:IActivePool, _defaultPool:IDefaultPool, _LUSD:uint256, _ETH:uint256) {
+        _defaultPool.decreaseLUSDDebt(_LUSD);
+        _activePool.increaseLUSDDebt(_LUSD);
+        _defaultPool.sendETHToActivePool(_ETH);
+    }
+
 
     #[external(v0)]
     fn getTroveOwnersCount(self: @ContractState) -> u256 {
