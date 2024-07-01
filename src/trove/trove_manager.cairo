@@ -1,17 +1,18 @@
+// %lang starknet
+
 #[starknet::contract]
-use array::ArrayTrait;
-use starknet::ContractAddress;
-use starknet::syscalls::storage_read;
-use starknet::syscalls::storage_write;
 mod TroveManager {
-    #[event]
-    #[derive(Drop, starknet::Event)]
-    enum TroveManagerOperation {
-        applyPendingRewards: applyPendingRewards,
-        liquidateInNormalMode: liquidateInNormalMode,
-        liquidateInRecoveryMode: liquidateInRecoveryMode,
-        redeemCollateral: redeemCollateral,
-    }
+    use debug::PrintTrait;
+    use starknet::ContractAddress;
+    use super::{IActivePool, IDefaultPool, IPriceFeed};
+    use super::{stabilityPool};
+    use utils::safeMath;
+    use array::ArrayTrait;
+    use starknet::syscalls::storage_read;
+    use starknet::syscalls::storage_write;
+    // import StructTroveManager as structs_trove
+    //we need to connect this smart contract to safeMath contract 
+
     enum Event {
         BorrowerOperationsAddressChanged: BorrowerOperationsAddressChanged,
         PriceFeedAddressChanged: PriceFeedAddressChanged,
@@ -159,7 +160,7 @@ mod TroveManager {
     //   Object containing the ETH and LUSD snapshots for a given active trove
     #[storage]
     struct RewardSnapshot {
-        ETH: felt252,
+        STARK: felt252,
         LUSDDebt: felt252,
     }
     #[storage]
@@ -224,9 +225,9 @@ mod TroveManager {
     struct RedemptionTotals {
         remainingLUSD: felt252,
         totalLUSDToRedeem: felt252,
-        totalETHDrawn: felt252,
-        ETHFee: felt252,
-        ETHToSendToRedeemer: felt252,
+        totalSTARKDrawn: felt252,
+        STARKFee: felt252,
+        STARKToSendToRedeemer: felt252,
         decayedBaseRate: felt252,
         price: felt252,
         totalLUSDSupplyAtStart: felt252,
@@ -234,30 +235,36 @@ mod TroveManager {
     #[storage]
     struct SingleRedemptionValues {
         LUSDLot: felt252,
-        ETHLot: felt252,
+        STARKLot: felt252,
         cancelledPartial: bool,
     }
 
     fn _addLiquidationValuesToTotals(
-        const oldTotals:LiquidationTotals,
-        const singleLiquidation:LiquidationValues
-        ) -> (newTotals:LiquidationTotals){
-            newTotals.totalCollGasCompensation = oldTotals.totalCollGasCompensation + singleLiquidation.collGasCompensation;
-            newTotals.totalLUSDGasCompensation = oldTotals.totalLUSDGasCompensation + singleLiquidation.LUSDGasCompensation;
-            newTotals.totalDebtInSequence = oldTotals.totalDebtInSequence + singleLiquidation.entireTroveDebt;
-            newTotals.totalCollInSequence = oldTotals.totalCollInSequence + singleLiquidation.entireTroveColl;
-            newTotals.totalDebtToOffset = oldTotals.totalDebtToOffset + singleLiquidation.debtToOffset;
-            newTotals.totalCollToSendToSP = oldTotals.totalCollToSendToSP + singleLiquidation.collToSendToSP;
-            newTotals.totalDebtToRedistribute = oldTotals.totalDebtToRedistribute + singleLiquidation.debtToRedistribute;
-            newTotals.totalCollToRedistribute = oldTotals.totalCollToRedistribute + singleLiquidation.collToRedistribute;
-            newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
+        oldTotals: LiquidationTotals, singleLiquidation: LiquidationValues
+    ) -> LiquidationTotals {
+        newTotals.totalCollGasCompensation = oldTotals.totalCollGasCompensation
+            + singleLiquidation.collGasCompensation;
+        newTotals.totalLUSDGasCompensation = oldTotals.totalLUSDGasCompensation
+            + singleLiquidation.LUSDGasCompensation;
+        newTotals.totalDebtInSequence = oldTotals.totalDebtInSequence
+            + singleLiquidation.entireTroveDebt;
+        newTotals.totalCollInSequence = oldTotals.totalCollInSequence
+            + singleLiquidation.entireTroveColl;
+        newTotals.totalDebtToOffset = oldTotals.totalDebtToOffset + singleLiquidation.debtToOffset;
+        newTotals.totalCollToSendToSP = oldTotals.totalCollToSendToSP
+            + singleLiquidation.collToSendToSP;
+        newTotals.totalDebtToRedistribute = oldTotals.totalDebtToRedistribute
+            + singleLiquidation.debtToRedistribute;
+        newTotals.totalCollToRedistribute = oldTotals.totalCollToRedistribute
+            + singleLiquidation.collToRedistribute;
+        newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
 
         newTotals;
     }
 
 
     #[view]
-    fn hasPendingRewards(_borrower:felt252)  -> bool {
+    fn hasPendingRewards(_borrower: felt252) -> bool {
         // /*
         // * A Trove has pending rewards if its snapshot is less than the current rewards per-unit-staked sum:
         // * this indicates that rewards have occured since the snapshot was made, and the user therefore has
@@ -268,103 +275,200 @@ mod TroveManager {
     }
 
 
-    fn _removeStake( _borrower:felt252)  {
-
-
+    fn _removeStake(_borrower: felt252) {
         let stake = storage_read(_borrower);
         totalStakes = totalStakes - stake;
         storage_write(borrower, 0);
-    
     }
-fn _getTotalsFromLiquidateTrovesSequence_RecoveryMode(_contractsCache:ContractsCache //memory
-        ,mut _price:u256, mut _LUSDInStabPool:u256, mut _n:u256 )-> totals:LiquidationTotals{ //memory
 
-mut vars:LocalVariables_LiquidationSequence;//memory
-mut singleLiquidation:LiquidationValues;//memory
+    fn batchLiquidateTroves(mut troveArray: ContractAddress) {
+        assert(troveArray.length == 0, 'error, Calldata address array must not be empty');
+        let mut activePoolCached: IActivePool = structs_trove.ContractsCache.activePool;
+        let mut defaultPoolCached: IDefaultPool = structs_trove.ContractsCache.defaultPool;
+        let mut priceFeed = IPriceFeed;
+        //הממשק  לא מובן למה צריך לדרוס מתנה מטיפוס  
+        //מבצע את כל 
+        let mut stabilityPoolCached = stabilityPool;
+        let mut vars = structs_trove.LocalVariables_OuterLiquidationFunction;
+        let mut totals = structs_trove.LiquidationTotals;
+        vars.price = priceFeed.fetchPrice();
+        //מחזיר את total LUSD
+        vars.LUSDInStabPool = stabilityPoolCached.getTotalLUSDDeposits();
+        //who is function _checkRecoveryMode 
+        vars.recoveryModeAtStart = _checkRecoveryMode(vars.price);
+        if vars.recoveryModeAtStart {
+            totals =
+                getTotalFromBatchLiquidate_RecoveryMode(
+                    activePoolCached, defaultPoolCached, vars.price, vars.LUSDInStabPool, troveArray
+                );
+        } else {
+            totals =
+                getTotalsFromBatchLiquidate_NormalMode(
+                    activePoolCached, defaultPoolCached, vars.price, vars.LUSDInStabPool, troveArray
+                );
+        }
+        assert(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
+        stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
+        redistributeDebtAndColl(
+            activePoolCached,
+            defaultPoolCached,
+            totals.totalDebtToRedistribute,
+            totals.totalCollToRedistribute
+        );
+        if (totals.totalCollSurplus > 0) {
+            activePoolCached.sendSTARK(ContractAddress(collSurplusPool), totals.totalCollSurplus);
+        }
+        // Update system snapshots
+        updateSystemSnapshots_excludeCollRemainder(
+            activePoolCached, totals.totalCollGasCompensation
+        );
+        vars.liquidatedDebt = totals.totalDebtInSequence;
+        vars
+            .liquidatedColl = totals
+            .totalCollInSequence
+            .sub(totals.totalCollGasCompensation)
+            .sub(totals.totalCollSurplus);
+        emit
+        Liquidation(
+            vars.liquidatedDebt,
+            vars.liquidatedColl,
+            totals.totalCollGasCompensation,
+            totals.totalLUSDGasCompensation
+        );
+        self
+            .emit(
+                Liquidation {
+                    _liquidatedDebt: vars.liquidatedDebt,
+                    _liquidatedColl: vars.liquidatedColl,
+                    _LUSDGasCompensation: totals.totalLUSDGasCompensation
+                }
+            );
+        // {_liquidatedDebt: felt252,
+        // _liquidatedColl:felt252,
+        // _collGasCompensation:felt252,
+        // _LUSDGasCompensation:felt252,}
+        // Send gas compensation to caller
+        sendGasCompensation(
+            activePoolCached,
+            msg.sender,
+            totals.totalLUSDGasCompensation,
+            totals.totalCollGasCompensation
+        );
+    }
+    fn getTotalFromBatchLiquidate_RecoveryMode(
+        activePool: IActivePool,
+        defaultPool: IDefaultPool,
+        price: felt252,
+        LUSDInStabPool: felt252,
+        mut troveArray: ContractAddress
+    ) -> LiquidationTotals {}
 
-vars.remainingLUSDInStabPool = _LUSDInStabPool;
-vars.backToNormalMode = false;
-vars.entireSystemDebt = getEntireSystemDebt();
-vars.entireSystemColl = getEntireSystemColl();
+    fn getTotalsFromBatchLiquidate_NormalMode(
+        activePool: IActivePool,
+        defaultPool: IDefaultPool,
+        price: felt252,
+        LUSDInStabPool: felt252,
+        mut troveArray: ContractAddress
+    ) -> LiquidationTotals {}
 
-vars.user = _contractsCache.sortedTroves.getLast();
+    fn redistributeDebtAndColl(
+        activePool: IActivePool, defaultPool: IDefaultPool, debt: felt252, coll: felt252
+    ) {}
 
-let mut firstUser:ContractAddress = _contractsCache.sortedTroves.getFirst();
-vars.i = 0;
-loop{
-     if vars.i > _n || vars.user == firstUser {
+    fn sendGasCompensation() {}
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum TroveManagerOperation {
+        applyPendingRewards: applyPendingRewards,
+        liquidateInNormalMode: liquidateInNormalMode,
+        liquidateInRecoveryMode: liquidateInRecoveryMode,
+        redeemCollateral: redeemCollateral,
+    }
+    fn _getTotalsFromLiquidateTrovesSequence_RecoveryMode(
+        _contractsCache: ContractsCache //memory
+        ,
+        mut _price: u256,
+        mut _LUSDInStabPool: u256,
+        mut _n: u256
+    ) -> LiquidationTotals { //memory
+        let mut vars = LocalVariables_LiquidationSequence; //memory
+        let mut singleLiquidation = LiquidationValues; //memory
+        vars.remainingLUSDInStabPool = _LUSDInStabPool;
+        vars.backToNormalMode = false;
+        vars.entireSystemDebt = getEntireSystemDebt();
+        vars.entireSystemColl = getEntireSystemColl();
+        vars.user = _contractsCache.sortedTroves.getLast();
+        let mut firstUser: ContractAddress = _contractsCache.sortedTroves.getFirst();
+        vars.i = 0;
+        loop {
+            if vars.i > _n || vars.user == firstUser {
+                break ();
+            }
+            let mut nextUser: ContractAddress = _contractsCache.sortedTroves.getPrev(vars.user);
+            vars.ICR = getCurrentICR(vars.user, _price);
+            if !vars.backToNormalMode {
+                if vars.ICR >= MCR && vars.remainingLUSDInStabPool == 0 {
+                    break ();
+                }
+                let mut TCR: u256 = LiquityMath
+                    ._computeCR(vars.entireSystemColl, vars.entireSystemDebt, _price);
+                singleLiquidation =
+                    _liquidateRecoveryMode(
+                        _contractsCache.activePool,
+                        _contractsCache.defaultPool,
+                        vars.user,
+                        vars.ICR,
+                        vars.remainingLUSDInStabPool,
+                        TCR,
+                        _price
+                    );
+                vars
+                    .remainingLUSDInStabPool = vars
+                    .remainingLUSDInStabPool
+                    .sub(singleLiquidation.debtToOffset);
+                vars.entireSystemDebt = vars.entireSystemDebt.sub(singleLiquidation.debtToOffset);
+                vars
+                    .entireSystemColl = vars
+                    .entireSystemColl
+                    .sub(singleLiquidation.collToSendToSP)
+                    .sub(singleLiquidation.collGasCompensation)
+                    .sub(singleLiquidation.collSurplus);
+                totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
+                vars
+                    .backToNormalMode =
+                        !_checkPotentialRecoveryMode(
+                            vars.entireSystemColl, vars.entireSystemDebt, _price
+                        );
+            } else if vars.backToNormalMode && vars.ICR < MCR {
+                singleLiquidation =
+                    _liquidateNormalMode(
+                        _contractsCache.activePool,
+                        _contractsCache.defaultPool,
+                        vars.user,
+                        vars.remainingLUSDInStabPool
+                    );
 
-         break();
-     }
-  
-     let mut nextUser:ContractAddress = _contractsCache.sortedTroves.getPrev(vars.user);
+                vars
+                    .remainingLUSDInStabPool = vars
+                    .remainingLUSDInStabPool
+                    .sub(singleLiquidation.debtToOffset);
+                totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
+            } else {
+                break ();
+                vars.user = nextUser;
+                vars.i = vars.i + 1;
+            }
+        }
+    }
 
-     vars.ICR = getCurrentICR(vars.user, _price);
+    #[external(v0)]
+    fn getTroveOwnersCount(self: @ContractState) -> u256 {
+        return TroveOwners.length;
+    }
 
-     if !vars.backToNormalMode {
-        
-         if vars.ICR >= MCR && vars.remainingLUSDInStabPool == 0{
-             
-             break();
-         } 
-
-         let mut TCR:u256 = LiquityMath._computeCR(vars.entireSystemColl, vars.entireSystemDebt, _price);
-
-         singleLiquidation = _liquidateRecoveryMode(
-             _contractsCache.activePool,
-             _contractsCache.defaultPool,
-             vars.user,
-             vars.ICR,
-             vars.remainingLUSDInStabPool,
-             TCR,
-             _price
-         );
-
-         
-         vars.remainingLUSDInStabPool = vars.remainingLUSDInStabPool.sub(singleLiquidation.debtToOffset);
-         vars.entireSystemDebt = vars.entireSystemDebt.sub(singleLiquidation.debtToOffset);
-         vars.entireSystemColl = vars.entireSystemColl.sub(singleLiquidation.collToSendToSP).sub(
-             singleLiquidation.collGasCompensation
-         ).sub(singleLiquidation.collSurplus);
-
-       
-         totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
-
-         vars.backToNormalMode =
-             !_checkPotentialRecoveryMode(vars.entireSystemColl, vars.entireSystemDebt, _price);
-     } else if vars.backToNormalMode && vars.ICR < MCR {
-         singleLiquidation = _liquidateNormalMode(
-             _contractsCache.activePool, _contractsCache.defaultPool, vars.user, vars.remainingLUSDInStabPool
-         );
-
-         vars.remainingLUSDInStabPool = vars.remainingLUSDInStabPool.sub(singleLiquidation.debtToOffset);
-
-        
-         totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
-     } else {
-         break();
-         
-
-     vars.user = nextUser;
-
-     vars.i = vars.i + 1;
+    #[external(v0)]
+    fn getTroveFromTroveOwnersArray(self: @ContractState, index: u256) -> ContractAddress {
+        return TroveOwners[index];
+    }
 }
 
-}
-}
-
-
-#[external(v0)]
-fn getTroveOwnersCount(self: @ContractState) -> u256 {
-    return TroveOwners.length;
-}
-
-#[external(v0)]
-fn getTroveFromTroveOwnersArray(self: @ContractState, index:u256) -> ContractAddress{
-    return TroveOwners[index];
-}
-
-
-
-
-}
