@@ -1,18 +1,10 @@
 use starknet:: ContractAddress;
 
 #[starknet::interface]
-trait ILPTokenWrapper{
-
-    #[external(v0)]
-    fn stake(amount: u256 );
-
-    #[external(v0)]
-    fn withdraw(amount: u256);
-
-    #[external(v0)]
-    fn totalSupply() -> u256;
-
-    #[external(v0)]
-    fn balanceOf(account :ContractAddress) -> u256;
-
+trait ILPTokenWrapper<TContractState> {
+    fn totalSupply(self: @TContractState) -> u256;
+    fn balanceOf(self: @TContractState, account: felt252) -> u256;
+    fn stake(ref self: TContractState, amount: u256);
+    fn withdraw(ref self: TContractState, amount: u256);
 }
+
