@@ -1,4 +1,3 @@
-
 #[starknet::interface]
 pub trait IHelloStarknet<TContractState> {
     fn increase_balance(ref self: TContractState, amount: felt252);
@@ -9,7 +8,7 @@ pub trait IHelloStarknet<TContractState> {
 mod HelloStarknet {
     #[storage]
     struct Storage {
-        balance: felt252, 
+        balance: felt252,
     }
 
     #[abi(embed_v0)]
@@ -26,5 +25,4 @@ mod HelloStarknet {
 }
 
 pub mod utils;
-
 

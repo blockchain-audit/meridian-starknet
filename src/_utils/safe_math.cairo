@@ -1,7 +1,5 @@
 #[starknet::library]
-
-
-mod SafeMath {
+mod safe_math {
     #[generate_trait]
     fn add(a: u256, b: u256) -> u256 {
         let c: u256 = a + b;
