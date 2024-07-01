@@ -43,3 +43,4 @@ secured algorithmically.
 * [stark-defi](https://github.com/Starkdefi/StarkDefi/tree/main)
 * [multisig](https://github.com/eqlabs/starknet-multisig/tree/main)
 * [dopewars](https://github.com/cartridge-gg/dopewars)
+* [argent](https://github.com/argentlabs/argent-contracts-starknet)
