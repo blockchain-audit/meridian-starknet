@@ -129,6 +129,7 @@ mod BorrowerOperations {
     }
 
     fn setAddresses() {}
+    
     fn openTrove() {}
     #[external(v0)]
     fn addColl(upperHint: ContractAddress, lowerHint: ContractAddress) {
@@ -169,8 +170,6 @@ mod BorrowerOperations {
     fn _triggerBorrowingFee() {}
     fn _getUSDValue() {}
     fn _getCollChange() {}
-    fn _updateTroveFromAdjustment() {}
-    fn _moveTokensAndETHfromAdjustment() {}
     fn _activePoolAddColl() {}
     fn _withdrawLUSD() {}
     fn _repayLUSD() {}
@@ -209,12 +208,6 @@ mod BorrowerOperations {
     }
 
     fn _requireNewTCRisAboveCCR() {}
-
-    fn _requireICRisAboveCCR() {}
-    fn _requireICRisAboveMCR() {}
-    fn _requireValidMaxFeePercentage() {}
-    fn _requireSufficientLUSDBalance() {}
-    fn _requireCallerIsStabilityPool() {}
 
     fn _getNewTCRFromTroveChange(
         collChange: u256, isCollIncrease: bool, debtChange: u256, isDebtIncrease: bool, price: u256
@@ -390,7 +383,7 @@ mod BorrowerOperations {
             _activePool.sendETH(_borrower, _collChange);
         }
     }
-    
+
     fn main() {}
 }
 
