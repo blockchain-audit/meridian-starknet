@@ -1,10 +1,10 @@
 
 #[starknet::interface]
 trait IActivePool<ContractState>{
+    use starknet::ContractAddress
     // --- Functions ---
-    fn sendETH(
-        self: @ContractState, _account: ContractAddress, _amount: felt252
-    ) ;
+    fn sendSTARK(_account: ContractAddress, _amount: u256);
+
 }
 // --- Events ---
 #[event]
