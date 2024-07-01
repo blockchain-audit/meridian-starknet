@@ -129,7 +129,7 @@ mod BorrowerOperations {
     }
 
     fn setAddresses() {}
-    
+
     fn openTrove() {}
     #[external(v0)]
     fn addColl(upperHint: ContractAddress, lowerHint: ContractAddress) {
