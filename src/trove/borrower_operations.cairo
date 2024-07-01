@@ -382,8 +382,10 @@ mod BorrowerOperations {
     }
 
     #[view]
-    fn _requireNotInRecoveryMode(self: @ContractState, price :u256)   {
-        assert(!_checkRecoveryMode(price), "BorrowerOps: Operation not permitted during Recovery Mode");
+    fn _requireNotInRecoveryMode(self: @ContractState, price: u256) {
+        assert(
+            !_checkRecoveryMode(price), "BorrowerOps: Operation not permitted during Recovery Mode"
+        );
     }
 
     fn main() {}
