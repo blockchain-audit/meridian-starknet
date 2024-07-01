@@ -1,5 +1,6 @@
 use starknet::ContractAddress;
-use trove::interfaces::IBorrowerOperations;
+use interfaces::IBorrowerOperations;
+use interfaces::{IActivePool, ILUSDToken};
 
 #[starknet::contract]
 mod BorrowerOperations {
@@ -170,9 +171,39 @@ mod BorrowerOperations {
     fn _triggerBorrowingFee() {}
     fn _getUSDValue() {}
     fn _getCollChange() {}
-    fn _activePoolAddColl() {}
-    fn _withdrawLUSD() {}
-    fn _repayLUSD() {}
+    fn _updateTroveFromAdjustment() {}
+    fn _moveTokensAndETHfromAdjustment() {}
+    // Send STARK to Active Pool and increase its recorded STARK balance
+    #[generate_trait]
+    fn _activePoolAddColl(activePool: IActivePool, amount: felt252) {
+        //if
+        assert(
+            sendSTARK(ContractAddress(activePool), amount), ' Sending STRAK to ActivePool failed'
+        );
+    }
+    // Issue the specified amount of LUSD to account and increases the total active debt (netDebtIncrease potentially includes a LUSDFee)
+    #[generate_trait]
+    fn _withdrawLUSD(
+        activePool: IActivePool,
+        lusdToken: ILQTYToken,
+        ContractAddress: account,
+        LUSDAmount: felt252,
+        netDebtIncrease: felt252
+    ) {
+        activePool.increaseLUSDDebt(netDebtIncrease);
+        lusdToken.mint(account, LUSDAmount);
+    }
+    // Burn the specified amount of LUSD from account and decreases the total active debt
+    #[generate_trait]
+    fn _repayLUSD(
+        activePool: IActivePool, lusdToken: ILUSDToken, account: ContractAddress, LUSD: felt252
+    ) {
+        activePool.decreaseLUSDDebt(LUSD);
+        lusdToken.burn(account, LUSD);
+    }
+
+    fn _requireNotInRecoveryMode() {}
+
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
         assert(
             debtRepayment <= currentDebt.sub(LUSD_GAS_COMPENSATION),
@@ -382,8 +413,10 @@ mod BorrowerOperations {
     }
 
     #[view]
-    fn _requireNotInRecoveryMode(self: @ContractState, price :u256)   {
-        assert(!_checkRecoveryMode(price), "BorrowerOps: Operation not permitted during Recovery Mode");
+    fn _requireNotInRecoveryMode(self: @ContractState, price: u256) {
+        assert(
+            !_checkRecoveryMode(price), "BorrowerOps: Operation not permitted during Recovery Mode"
+        );
     }
 
     fn main() {}

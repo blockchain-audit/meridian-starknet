@@ -239,6 +239,7 @@ mod TroveManager {
         cancelledPartial: bool,
     }
 
+
     fn _addLiquidationValuesToTotals(
         oldTotals: LiquidationTotals, singleLiquidation: LiquidationValues
     ) -> LiquidationTotals {
@@ -455,9 +456,56 @@ mod TroveManager {
                 totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
             } else {
                 break ();
-                vars.user = nextUser;
-                vars.i = vars.i + 1;
             }
+            vars.user = nextUser;
+            vars.i = vars.i + 1;
+        }
+    }
+    fn _sendGasCompensation(
+        _activePool: IActivePool, _liquidator: address, _LUSD: uint256, _ETH: uint256
+    ) {
+        if _LUSD > 0 {
+            lusdToken.returnFromPool(gasPoolAddress, _liquidator, _LUSD);
+        }
+
+        if _ETH > 0 {
+            _activePool.sendETH(_liquidator, _ETH);
+        }
+    }
+    fn _movePendingTroveRewardsToActivePool(
+        _activePool: IActivePool, _defaultPool: IDefaultPool, _LUSD: uint256, _ETH: uint256
+    ) {
+        _defaultPool.decreaseLUSDDebt(_LUSD);
+        _activePool.increaseLUSDDebt(_LUSD);
+        _defaultPool.sendETHToActivePool(_ETH);
+    }
+
+
+    fn _redeemCloseTrove(
+        _contractsCache: ContractsCache, //memory
+        _borrower: ContractAddress,
+        _LUSD: u256,
+        _ETH: u256
+    ) {
+        _contractsCache.lusdToken.burn(gasPoolAddress, _LUSD);
+        _contractsCache.activePool.decreaseLUSDDebt(_LUSD);
+        _contractsCache.collSurplusPool.accountSurplus(_borrower, _ETH);
+        _contractsCache.activePool.sendETH(ContractAddress(_contractsCache.collSurplusPool), _ETH);
+    }
+
+    fn _isValidFirstRedemptionHint(
+        _sortedTroves: ISortedTroves, _firstRedemptionHint: ContractAddress, _price: u256
+    ) -> bool {
+        if _firstRedemptionHint == address(0)
+            || !_sortedTroves.contains(_firstRedemptionHint)
+            || getCurrentICR(_firstRedemptionHint, _price) < MCR {
+            false
+        }
+        let nextTrove: ContractAddress = _sortedTroves.getNext(_firstRedemptionHint);
+        if nextTrove == address(0) || getCurrentICR(nextTrove, _price) < MCR {
+            true
+        } else {
+            false
         }
     }
 
