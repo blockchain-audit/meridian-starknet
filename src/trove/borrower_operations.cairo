@@ -129,6 +129,7 @@ mod BorrowerOperations {
     }
 
     fn setAddresses() {}
+
     fn openTrove() {}
     #[external(v0)]
     fn addColl(upperHint: ContractAddress, lowerHint: ContractAddress) {
@@ -169,55 +170,9 @@ mod BorrowerOperations {
     fn _triggerBorrowingFee() {}
     fn _getUSDValue() {}
     fn _getCollChange() {}
-
-    fn _updateTroveFromAdjustment(
-        _troveManager: ITroveManager,
-        _borrower: ContractAddress,
-        _collChange: u256,
-        _isCollIncrease: bool,
-        _debtChange: u256,
-        _isDebtIncrease: bool
-    ) -> (u256, u256) {
-        let mut newColl: u256 = if _isCollIncrease {
-            _troveManager.increaseTroveColl(_borrower, _collChange)
-        } else {
-            _troveManager.decreaseTroveColl(_borrower, _collChange)
-        };
-        let mut newDebt: u256 = if _isDebtIncrease {
-            _troveManager.increaseTroveDebt(_borrower, _debtChange)
-        } else {
-            _troveManager.decreaseTroveDebt(_borrower, _debtChange)
-        };
-        (newColl, newDebt)
-    }
-
-
-    fn _moveTokensAndETHfromAdjustment(
-        _activePool: IActivePool,
-        _lusdToken: ILUSDToken,
-        _borrower: ContractAddress,
-        _collChange: u256,
-        _isCollIncrease: bool,
-        _LUSDChange: u256,
-        _isDebtIncrease: bool,
-        _netDebtChange: u256
-    ) {
-        if (_isDebtIncrease) {
-            _withdrawLUSD(_activePool, _lusdToken, _borrower, _LUSDChange, _netDebtChange);
-        } else {
-            _repayLUSD(_activePool, _lusdToken, _borrower, _LUSDChange);
-        }
-
-        if (_isCollIncrease) {
-            _activePoolAddColl(_activePool, _collChange);
-        } else {
-            _activePool.sendETH(_borrower, _collChange);
-        }
-    }
-
     fn _activePoolAddColl() {}
-    fn _requireNotInRecoveryMode() {}
-
+    fn _withdrawLUSD() {}
+    fn _repayLUSD() {}
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
         assert(
             debtRepayment <= currentDebt.sub(LUSD_GAS_COMPENSATION),
@@ -376,6 +331,59 @@ mod BorrowerOperations {
     #[view]
     fn _requireCallerIsStabilityPool(self: @ContractState) {
         assert(msg.sender == stabilityPoolAddress, "BorrowerOps: Caller is not Stability Pool");
+    }
+
+    fn main() {}
+
+
+    fn _updateTroveFromAdjustment(
+        _troveManager: ITroveManager,
+        _borrower: ContractAddress,
+        _collChange: u256,
+        _isCollIncrease: bool,
+        _debtChange: u256,
+        _isDebtIncrease: bool
+    ) -> (u256, u256) {
+        let mut newColl: u256 = if _isCollIncrease {
+            _troveManager.increaseTroveColl(_borrower, _collChange)
+        } else {
+            _troveManager.decreaseTroveColl(_borrower, _collChange)
+        };
+        let mut newDebt: u256 = if _isDebtIncrease {
+            _troveManager.increaseTroveDebt(_borrower, _debtChange)
+        } else {
+            _troveManager.decreaseTroveDebt(_borrower, _debtChange)
+        };
+        (newColl, newDebt)
+    }
+
+
+    fn _moveTokensAndETHfromAdjustment(
+        _activePool: IActivePool,
+        _lusdToken: ILUSDToken,
+        _borrower: ContractAddress,
+        _collChange: u256,
+        _isCollIncrease: bool,
+        _LUSDChange: u256,
+        _isDebtIncrease: bool,
+        _netDebtChange: u256
+    ) {
+        if (_isDebtIncrease) {
+            _withdrawLUSD(_activePool, _lusdToken, _borrower, _LUSDChange, _netDebtChange);
+        } else {
+            _repayLUSD(_activePool, _lusdToken, _borrower, _LUSDChange);
+        }
+
+        if (_isCollIncrease) {
+            _activePoolAddColl(_activePool, _collChange);
+        } else {
+            _activePool.sendETH(_borrower, _collChange);
+        }
+    }
+
+    #[view]
+    fn _requireNotInRecoveryMode(self: @ContractState, price :u256)   {
+        assert(!_checkRecoveryMode(price), "BorrowerOps: Operation not permitted during Recovery Mode");
     }
 
     fn main() {}
