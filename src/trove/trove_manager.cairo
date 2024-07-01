@@ -249,9 +249,55 @@ mod TroveManager {
     #[abi(embed_v0)]
       impl TroveManager of super::ITroveManager<ContractState> 
       {
+ 
        
        
     
+    fn setAddresses(
+            _borrowerOperationsAddress: ContractAddress,
+            _activePoolAddress: ContractAddress,
+            _defaultPoolAddress: ContractAddress,
+            _stabilityPoolAddress: ContractAddress,
+            _gasPoolAddress: ContractAddress,
+            _collSurplusPoolAddress: ContractAddress,
+            _priceFeedAddress: ContractAddress,
+            _lusdTokenAddress: ContractAddress,
+            _sortedTrovesAddress: ContractAddress,
+            _lqtyTokenAddress: ContractAddress,
+            _lqtyStakingAddress: ContractAddress
+           ) 
+           {
+            assert_only_owner();
+              
+               self.borrowerOperationsAddress.write(_borrowerOperationsAddress);
+               self.lqtyToken.write(ILQTYToken(_lqtyTokenAddress));
+               self.stabilityPool.write(IStabilityPool(_stabilityPoolAddress));
+               self.priceFeed.write(IPriceFeed(_priceFeedAddress));
+   
+               self.activePool.write(IActivePool(_activePoolAddress));
+               self.defaultPool.write(IDefaultPool(_defaultPoolAddress));
+               self.lusdToken.write(ILUSDToken(_lusdTokenAddress));
+               self.lqtyStaking.write(ILQTYStaking(_lqtyStakingAddress));
+               self.sortedTroves.write(ISortedTroves(_sortedTrovesAddress));
+               self.collSurplusPool.write(ICollSurplusPool(_collSurplusPoolAddress));
+               self.gasPoolAddress.write(_gasPoolAddress); 
+           };
+   
+           self.emit(BorrowerOperationsAddressChanged {_newBorrowerOperationsAddress:_borrowerOperationsAddress});
+           self.emit (ActivePoolAddressChanged {_activePoolAddress:_activePoolAddress});
+           self.emit (DefaultPoolAddressChanged {_defaultPoolAddress:_defaultPoolAddress});
+           self.emit (StabilityPoolAddressChanged {_stabilityPoolAddress:_stabilityPoolAddress});
+           self.emit (GasPoolAddressChanged {_gasPoolAddress:_gasPoolAddress});
+           self.emit (CollSurplusPoolAddressChanged {_collSurplusPoolAddress:_collSurplusPoolAddress});
+           self.emit (PriceFeedAddressChanged {_newPriceFeedAddress:_priceFeedAddress});
+           self.emit (LUSDTokenAddressChanged {_newLUSDTokenAddress:_lusdTokenAddress});
+           self.emit (SortedTrovesAddressChanged {_sortedTrovesAddress:_sortedTrovesAddress});
+           self.emit (LQTYTokenAddressChanged{_lqtyTokenAddress: _lqtyTokenAddress});
+           self.emit (LQTYStakingAddressChanged {_lqtyStakingAddress:_lqtyStakingAddress});
+   
+           renounce_ownership();
+   
+
     fn _addLiquidationValuesToTotals(
         oldTotals: LiquidationTotals, singleLiquidation: LiquidationValues
     ) -> LiquidationTotals {
@@ -272,22 +318,8 @@ mod TroveManager {
             + singleLiquidation.collToRedistribute;
         newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
 
-        fn _addLiquidationValuesToTotals(
-            const oldTotals:LiquidationTotals,
-            const singleLiquidation:LiquidationValues
-            ) -> (newTotals:LiquidationTotals){
-                newTotals.totalCollGasCompensation = oldTotals.totalCollGasCompensation + singleLiquidation.collGasCompensation;
-                newTotals.totalLUSDGasCompensation = oldTotals.totalLUSDGasCompensation + singleLiquidation.LUSDGasCompensation;
-                newTotals.totalDebtInSequence = oldTotals.totalDebtInSequence + singleLiquidation.entireTroveDebt;
-                newTotals.totalCollInSequence = oldTotals.totalCollInSequence + singleLiquidation.entireTroveColl;
-                newTotals.totalDebtToOffset = oldTotals.totalDebtToOffset + singleLiquidation.debtToOffset;
-                newTotals.totalCollToSendToSP = oldTotals.totalCollToSendToSP + singleLiquidation.collToSendToSP;
-                newTotals.totalDebtToRedistribute = oldTotals.totalDebtToRedistribute + singleLiquidation.debtToRedistribute;
-                newTotals.totalCollToRedistribute = oldTotals.totalCollToRedistribute + singleLiquidation.collToRedistribute;
-                newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
-
-            newTotals;
-        }
+        newTotals;
+    }
 
 
     #[view]
@@ -298,8 +330,8 @@ mod TroveManager {
         // * pending rewards
         // */
 
-            return rewardSnapshots[_borrower].ETH < L_ETH && Troves[_borrower].status == Status.active;
-        }
+        return rewardSnapshots[_borrower].ETH < L_ETH && Troves[_borrower].status == Status.active;
+    }
 
 
     fn _removeStake(_borrower: felt252) {
@@ -483,12 +515,13 @@ mod TroveManager {
             } else {
                 break ();
             }
-                vars.user = nextUser;
-                vars.i = vars.i + 1;
-            
+            vars.user = nextUser;
+            vars.i = vars.i + 1;
         }
     }
-    fn _sendGasCompensation ( _activePool:IActivePool, _liquidator:address , _LUSD:uint256 , _ETH:uint256 ) {
+    fn _sendGasCompensation(
+        _activePool: IActivePool, _liquidator: address, _LUSD: uint256, _ETH: uint256
+    ) {
         if _LUSD > 0 {
             lusdToken.returnFromPool(gasPoolAddress, _liquidator, _LUSD);
         }
@@ -497,35 +530,40 @@ mod TroveManager {
             _activePool.sendETH(_liquidator, _ETH);
         }
     }
-    fn _movePendingTroveRewardsToActivePool(_activePool:IActivePool, _defaultPool:IDefaultPool, _LUSD:uint256, _ETH:uint256) {
+    fn _movePendingTroveRewardsToActivePool(
+        _activePool: IActivePool, _defaultPool: IDefaultPool, _LUSD: uint256, _ETH: uint256
+    ) {
         _defaultPool.decreaseLUSDDebt(_LUSD);
         _activePool.increaseLUSDDebt(_LUSD);
         _defaultPool.sendETHToActivePool(_ETH);
     }
 
 
-    fn _redeemCloseTrove(_contractsCache:ContractsCache,//memory
-                                     _borrower:ContractAddress, _LUSD:u256,  _ETH:u256)
-    {
+    fn _redeemCloseTrove(
+        _contractsCache: ContractsCache, //memory
+        _borrower: ContractAddress,
+        _LUSD: u256,
+        _ETH: u256
+    ) {
         _contractsCache.lusdToken.burn(gasPoolAddress, _LUSD);
         _contractsCache.activePool.decreaseLUSDDebt(_LUSD);
         _contractsCache.collSurplusPool.accountSurplus(_borrower, _ETH);
         _contractsCache.activePool.sendETH(ContractAddress(_contractsCache.collSurplusPool), _ETH);
     }
 
-    fn _isValidFirstRedemptionHint(_sortedTroves:ISortedTroves,  _firstRedemptionHint:ContractAddress,  _price:u256)-> bool
-    {
-        if  _firstRedemptionHint == address(0) || !_sortedTroves.contains(_firstRedemptionHint)
-                       || getCurrentICR(_firstRedemptionHint, _price) < MCR {
-             false
+    fn _isValidFirstRedemptionHint(
+        _sortedTroves: ISortedTroves, _firstRedemptionHint: ContractAddress, _price: u256
+    ) -> bool {
+        if _firstRedemptionHint == address(0)
+            || !_sortedTroves.contains(_firstRedemptionHint)
+            || getCurrentICR(_firstRedemptionHint, _price) < MCR {
+            false
         }
-        let nextTrove:ContractAddress = _sortedTroves.getNext(_firstRedemptionHint);
-        if nextTrove == address(0) || getCurrentICR(nextTrove, _price) < MCR{
-            
-                true
-        }
-        else{
-                false
+        let nextTrove: ContractAddress = _sortedTroves.getNext(_firstRedemptionHint);
+        if nextTrove == address(0) || getCurrentICR(nextTrove, _price) < MCR {
+            true
+        } else {
+            false
         }
     }
 
@@ -539,52 +577,8 @@ mod TroveManager {
         return TroveOwners[index];
     }
 }
-    fn setAddresses(
-         _borrowerOperationsAddress: ContractAddress,
-         _activePoolAddress: ContractAddress,
-         _defaultPoolAddress: ContractAddress,
-         _stabilityPoolAddress: ContractAddress,
-         _gasPoolAddress: ContractAddress,
-         _collSurplusPoolAddress: ContractAddress,
-         _priceFeedAddress: ContractAddress,
-         _lusdTokenAddress: ContractAddress,
-         _sortedTrovesAddress: ContractAddress,
-         _lqtyTokenAddress: ContractAddress,
-         _lqtyStakingAddress: ContractAddress
-        ) 
-        {
-         assert_only_owner();
-           
-            self.borrowerOperationsAddress.write(_borrowerOperationsAddress);
-            self.lqtyToken.write(ILQTYToken(_lqtyTokenAddress));
-            self.stabilityPool.write(IStabilityPool(_stabilityPoolAddress));
-            self.priceFeed.write(IPriceFeed(_priceFeedAddress));
+}
 
-            self.activePool.write(IActivePool(_activePoolAddress));
-            self.defaultPool.write(IDefaultPool(_defaultPoolAddress));
-            self.lusdToken.write(ILUSDToken(_lusdTokenAddress));
-            self.lqtyStaking.write(ILQTYStaking(_lqtyStakingAddress));
-            self.sortedTroves.write(ISortedTroves(_sortedTrovesAddress));
-            self.collSurplusPool.write(ICollSurplusPool(_collSurplusPoolAddress));
-            self.gasPoolAddress.write(_gasPoolAddress); 
-        };
-
-        self.emit(BorrowerOperationsAddressChanged {_newBorrowerOperationsAddress:_borrowerOperationsAddress});
-        self.emit (ActivePoolAddressChanged {_activePoolAddress:_activePoolAddress});
-        self.emit (DefaultPoolAddressChanged {_defaultPoolAddress:_defaultPoolAddress});
-        self.emit (StabilityPoolAddressChanged {_stabilityPoolAddress:_stabilityPoolAddress});
-        self.emit (GasPoolAddressChanged {_gasPoolAddress:_gasPoolAddress});
-        self.emit (CollSurplusPoolAddressChanged {_collSurplusPoolAddress:_collSurplusPoolAddress});
-        self.emit (PriceFeedAddressChanged {_newPriceFeedAddress:_priceFeedAddress});
-        self.emit (LUSDTokenAddressChanged {_newLUSDTokenAddress:_lusdTokenAddress});
-        self.emit (SortedTrovesAddressChanged {_sortedTrovesAddress:_sortedTrovesAddress});
-        self.emit (LQTYTokenAddressChanged{_lqtyTokenAddress: _lqtyTokenAddress});
-        self.emit (LQTYStakingAddressChanged {_lqtyStakingAddress:_lqtyStakingAddress});
-
-        renounce_ownership();
-
-      }
-    }
 
 
 
