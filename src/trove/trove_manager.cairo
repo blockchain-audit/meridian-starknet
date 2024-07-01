@@ -357,6 +357,31 @@ mod TroveManager {
         }
     }
 
+    fn _redeemCloseTrove(_contractsCache:ContractsCache,//memory
+                                     _borrower:address, _LUSD:uint256,  _ETH:uint256)
+    {
+        _contractsCache.lusdToken.burn(gasPoolAddress, _LUSD);
+        _contractsCache.activePool.decreaseLUSDDebt(_LUSD);
+        _contractsCache.collSurplusPool.accountSurplus(_borrower, _ETH);
+        _contractsCache.activePool.sendETH(address(_contractsCache.collSurplusPool), _ETH);
+    }
+
+//     function _isValidFirstRedemptionHint(ISortedTroves _sortedTroves, address _firstRedemptionHint, uint256 _price)
+//     internal
+//     view
+//     returns (bool)
+// {
+//     if (
+//         _firstRedemptionHint == address(0) || !_sortedTroves.contains(_firstRedemptionHint)
+//             || getCurrentICR(_firstRedemptionHint, _price) < MCR
+//     ) {
+//         return false;
+//     }
+
+//     address nextTrove = _sortedTroves.getNext(_firstRedemptionHint);
+//     return nextTrove == address(0) || getCurrentICR(nextTrove, _price) < MCR;
+// }
+
     #[external(v0)]
     fn getTroveOwnersCount(self: @ContractState) -> u256 {
         return TroveOwners.length;
