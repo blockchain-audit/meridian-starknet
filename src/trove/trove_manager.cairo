@@ -318,6 +318,26 @@ mod TroveManager {
         newTotals;
     }
 
+    #[external(v0)]
+    fn adjustTrove(
+        maxFeePercentage: u256,
+        _collWithdrawal: u256,
+        _LUSDChange: u256,
+        _isDebtIncrease: bool,
+        _upperHint: ContractAddress,
+        _lowerHint: ContractAddress
+    ) {
+        _adjustTrove(
+            msg.sender,
+            _collWithdrawal,
+            _LUSDChange,
+            _isDebtIncrease,
+            _upperHint,
+            _lowerHint,
+            _maxFeePercentage
+        );
+    }
+
 
     #[view]
     fn hasPendingRewards(_borrower: felt252) -> bool {
