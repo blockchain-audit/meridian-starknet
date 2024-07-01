@@ -1,3 +1,5 @@
+use starknet::ContractAddress;
+
 #[starknet::interface]
 trait ILPTokenWrapper<TContractState> {
     fn totalSupply(self: @TContractState) -> u256;
@@ -5,3 +7,4 @@ trait ILPTokenWrapper<TContractState> {
     fn stake(ref self: TContractState, amount: u256);
     fn withdraw(ref self: TContractState, amount: u256);
 }
+
