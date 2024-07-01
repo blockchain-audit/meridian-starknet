@@ -1,6 +1,6 @@
 use starknet::ContractAddress;
 use interfaces::IBorrowerOperations;
-use interfaces::{IActivePool,ILUSDToken}
+use interfaces::{IActivePool, ILUSDToken};
 
 #[starknet::contract]
 mod BorrowerOperations {
@@ -173,25 +173,35 @@ mod BorrowerOperations {
     fn _getCollChange() {}
     fn _updateTroveFromAdjustment() {}
     fn _moveTokensAndETHfromAdjustment() {}
-      // Send STARK to Active Pool and increase its recorded STARK balance
-     #[generate_trait]
-     fn _activePoolAddColl(activePool:IActivePool,amount:felt252)internal {
+    // Send STARK to Active Pool and increase its recorded STARK balance
+    #[generate_trait]
+    fn _activePoolAddColl(activePool: IActivePool, amount: felt252) {
         //if
-        assert(sendSTARK(ContractAddress(activePool), amount), ' Sending STRAK to ActivePool failed');
-     }
-     // Issue the specified amount of LUSD to account and increases the total active debt (netDebtIncrease potentially includes a LUSDFee)
-     #[generate_trait]
-     fn _withdrawLUSD(activePool:IActivePool,lusdToken:ILQTYToken,ContractAddress:account,LUSDAmount:felt252,netDebtIncrease:felt252) {
-         activePool.increaseLUSDDebt(netDebtIncrease);
-         lusdToken.mint(account, LUSDAmount);
-     }       
+        assert(
+            sendSTARK(ContractAddress(activePool), amount), ' Sending STRAK to ActivePool failed'
+        );
+    }
+    // Issue the specified amount of LUSD to account and increases the total active debt (netDebtIncrease potentially includes a LUSDFee)
+    #[generate_trait]
+    fn _withdrawLUSD(
+        activePool: IActivePool,
+        lusdToken: ILQTYToken,
+        ContractAddress: account,
+        LUSDAmount: felt252,
+        netDebtIncrease: felt252
+    ) {
+        activePool.increaseLUSDDebt(netDebtIncrease);
+        lusdToken.mint(account, LUSDAmount);
+    }
     // Burn the specified amount of LUSD from account and decreases the total active debt
     #[generate_trait]
-    fn _repayLUSD(activePool:IActivePool,lusdToken:ILUSDToken,account:ContractAddress,LUSD:felt252) {
+    fn _repayLUSD(
+        activePool: IActivePool, lusdToken: ILUSDToken, account: ContractAddress, LUSD: felt252
+    ) {
         activePool.decreaseLUSDDebt(LUSD);
         lusdToken.burn(account, LUSD);
-    }     
-  
+    }
+
     fn _requireNotInRecoveryMode() {}
 
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
