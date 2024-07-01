@@ -1,12 +1,11 @@
 #[starknet::library]
-#[starknet::SafeMath]
+use util::safe_math;
 
 use debug::PrintTrait;
 
-
 mod LiquityMath {
 
-    //use SafeMath
+    
     const DECIMAL_PRECISION: u256 = 1000000000000000000;//1e18
     const NICR_PRECISION: u256 = 1000000000000000000;//1e20
     #[generate_trait] 
@@ -26,10 +25,9 @@ mod LiquityMath {
         else {b}          
     }
     #[generate_trait]
-<<<<<<< HEAD
     fn decMul(x: u256, y: u256)-> u256{
       
-      let prod_xy:u256 = x*y;//mul(x,y);//SafeMath.mul(x,y); //
+      let prod_xy:u256 = x*y//mul(x,y);
       let decProd:u256 = prod_xy+(DECIMAL_PRECISION/2)/DECIMAL_PRECISION;//.add(DECIMAL_PRECISION / 2).div(DECIMAL_PRECISION);
       decProd   
     }
@@ -46,9 +44,6 @@ mod LiquityMath {
 
             let mut base:u256 = _base;
             let mut exp:u256  = _minutes;
-=======
-    fn _decPow( _base: u256, mut _minutes: u256)->u256{
->>>>>>> c4207a5dca87ba0686d6e5ca5f85990988226bb1
 
             loop {
                 if exp <= 1 {
@@ -66,7 +61,6 @@ mod LiquityMath {
             };
             decMul(result, base)
         }
-<<<<<<< HEAD
 
     }
 
@@ -75,19 +69,19 @@ mod LiquityMath {
 
         if a >= b {
             a-b
-         //   a.sub(b)
+         //   sub(a,b)
         }
         else{ 
 
             b-a
-            //b.sub(a)
+            //sub(b.a)
         }
     }
     #[generate_trait]
     fn _computeNominalCR(mut coll:u256, debt:u256) -> u256 {
         if debt > 0 {
 
-             //coll = coll.mul(NICR_PRECISION).div(debt);
+             //coll = div(mul(coll,NICR_PRECISION),debt);
             coll = coll*NICR_PRECISION/debt;
             coll      
         }      
@@ -119,8 +113,3 @@ mod LiquityMath {
   
 
 
-=======
-    }
-}
-
->>>>>>> c4207a5dca87ba0686d6e5ca5f85990988226bb1
