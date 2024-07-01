@@ -173,9 +173,6 @@ mod BorrowerOperations {
     fn _activePoolAddColl() {}
     fn _withdrawLUSD() {}
     fn _repayLUSD() {}
-
-    fn _requireNotInRecoveryMode() {}
-
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
         assert(
             debtRepayment <= currentDebt.sub(LUSD_GAS_COMPENSATION),
