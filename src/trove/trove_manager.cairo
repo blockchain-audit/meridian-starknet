@@ -238,7 +238,62 @@ mod TroveManager {
         STARKLot: felt252,
         cancelledPartial: bool,
     }
+    #[storage]
+    struct TroveManager {
+        borrowerOperationsAddress: ContractAddress,
+        stabilityPool: IStabilityPool,
+        priceFeed: IPriceFeed,
+        lqtyToken: ILQTYToken
+    }
 
+    // need to run with this lines but it is not
+
+    // #[abi(embed_v0)]
+    //   impl TroveManager of super::ITroveManager<ContractState> 
+    //   {   
+
+    fn setAddresses(
+        _borrowerOperationsAddress: ContractAddress,
+        _activePoolAddress: ContractAddress,
+        _defaultPoolAddress: ContractAddress,
+        _stabilityPoolAddress: ContractAddress,
+        _gasPoolAddress: ContractAddress,
+        _collSurplusPoolAddress: ContractAddress,
+        _priceFeedAddress: ContractAddress,
+        _lusdTokenAddress: ContractAddress,
+        _sortedTrovesAddress: ContractAddress,
+        _lqtyTokenAddress: ContractAddress,
+        _lqtyStakingAddress: ContractAddress
+    ) {
+        assert_only_owner();
+
+        self.borrowerOperationsAddress.write(_borrowerOperationsAddress);
+        self.lqtyToken.write(ILQTYToken(_lqtyTokenAddress));
+        self.stabilityPool.write(IStabilityPool(_stabilityPoolAddress));
+        self.priceFeed.write(IPriceFeed(_priceFeedAddress));
+
+        self.activePool.write(IActivePool(_activePoolAddress));
+        self.defaultPool.write(IDefaultPool(_defaultPoolAddress));
+        self.lusdToken.write(ILUSDToken(_lusdTokenAddress));
+        self.lqtyStaking.write(ILQTYStaking(_lqtyStakingAddress));
+        self.sortedTroves.write(ISortedTroves(_sortedTrovesAddress));
+        self.collSurplusPool.write(ICollSurplusPool(_collSurplusPoolAddress));
+        self.gasPoolAddress.write(_gasPoolAddress);
+    }
+
+    //    self.emit (BorrowerOperationsAddressChanged {_newBorrowerOperationsAddress:_borrowerOperationsAddress});
+    //    self.emit (ActivePoolAddressChanged {_activePoolAddress:_activePoolAddress});
+    //    self.emit (DefaultPoolAddressChanged {_defaultPoolAddress:_defaultPoolAddress});
+    //    self.emit (StabilityPoolAddressChanged {_stabilityPoolAddress:_stabilityPoolAddress});
+    //    self.emit (GasPoolAddressChanged {_gasPoolAddress:_gasPoolAddress});
+    //    self.emit (CollSurplusPoolAddressChanged {_collSurplusPoolAddress:_collSurplusPoolAddress});
+    //    self.emit (PriceFeedAddressChanged {_newPriceFeedAddress:_priceFeedAddress});
+    //    self.emit (LUSDTokenAddressChanged {_newLUSDTokenAddress:_lusdTokenAddress});
+    //    self.emit (SortedTrovesAddressChanged {_sortedTrovesAddress:_sortedTrovesAddress});
+    //    self.emit (LQTYTokenAddressChanged{_lqtyTokenAddress: _lqtyTokenAddress});
+    //    self.emit (LQTYStakingAddressChanged {_lqtyStakingAddress:_lqtyStakingAddress});
+
+    fn renounce_ownership() {}
 
     fn _addLiquidationValuesToTotals(
         oldTotals: LiquidationTotals, singleLiquidation: LiquidationValues
@@ -259,6 +314,7 @@ mod TroveManager {
         newTotals.totalCollToRedistribute = oldTotals.totalCollToRedistribute
             + singleLiquidation.collToRedistribute;
         newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
+    
 
         newTotals;
     }
