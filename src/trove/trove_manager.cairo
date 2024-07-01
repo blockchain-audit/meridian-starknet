@@ -314,7 +314,6 @@ mod TroveManager {
         newTotals.totalCollToRedistribute = oldTotals.totalCollToRedistribute
             + singleLiquidation.collToRedistribute;
         newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
-    
 
         newTotals;
     }
