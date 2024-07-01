@@ -169,8 +169,52 @@ mod BorrowerOperations {
     fn _triggerBorrowingFee() {}
     fn _getUSDValue() {}
     fn _getCollChange() {}
-    fn _updateTroveFromAdjustment() {}
-    fn _moveTokensAndETHfromAdjustment() {}
+
+    fn _updateTroveFromAdjustment(
+        _troveManager: ITroveManager,
+        _borrower: ContractAddress,
+        _collChange: u256,
+        _isCollIncrease: bool,
+        _debtChange: u256,
+        _isDebtIncrease: bool
+    ) -> (u256, u256) {
+        let mut newColl: u256 = if _isCollIncrease {
+            _troveManager.increaseTroveColl(_borrower, _collChange)
+        } else {
+            _troveManager.decreaseTroveColl(_borrower, _collChange)
+        };
+        let mut newDebt: u256 = if _isDebtIncrease {
+            _troveManager.increaseTroveDebt(_borrower, _debtChange)
+        } else {
+            _troveManager.decreaseTroveDebt(_borrower, _debtChange)
+        };
+        (newColl, newDebt)
+    }
+
+
+    fn _moveTokensAndETHfromAdjustment(
+        _activePool: IActivePool,
+        _lusdToken: ILUSDToken,
+        _borrower: ContractAddress,
+        _collChange: u256,
+        _isCollIncrease: bool,
+        _LUSDChange: u256,
+        _isDebtIncrease: bool,
+        _netDebtChange: u256
+    ) {
+        if (_isDebtIncrease) {
+            _withdrawLUSD(_activePool, _lusdToken, _borrower, _LUSDChange, _netDebtChange);
+        } else {
+            _repayLUSD(_activePool, _lusdToken, _borrower, _LUSDChange);
+        }
+
+        if (_isCollIncrease) {
+            _activePoolAddColl(_activePool, _collChange);
+        } else {
+            _activePool.sendETH(_borrower, _collChange);
+        }
+    }
+
     fn _activePoolAddColl() {}
     fn _requireNotInRecoveryMode() {}
 
