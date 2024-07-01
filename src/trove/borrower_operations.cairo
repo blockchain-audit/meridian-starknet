@@ -172,6 +172,9 @@ mod BorrowerOperations {
     fn _updateTroveFromAdjustment() {}
     fn _moveTokensAndETHfromAdjustment() {}
     fn _activePoolAddColl() {}
+    fn _withdrawLUSD() {}
+    fn _repayLUSD() {}
+
     fn _requireNotInRecoveryMode() {}
 
     fn _requireValidLUSDRepayment(currentDebt: u256, debtRepayment: u256) {
@@ -206,6 +209,12 @@ mod BorrowerOperations {
     }
 
     fn _requireNewTCRisAboveCCR() {}
+
+    fn _requireICRisAboveCCR() {}
+    fn _requireICRisAboveMCR() {}
+    fn _requireValidMaxFeePercentage() {}
+    fn _requireSufficientLUSDBalance() {}
+    fn _requireCallerIsStabilityPool() {}
 
     fn _getNewTCRFromTroveChange(
         collChange: u256, isCollIncrease: bool, debtChange: u256, isDebtIncrease: bool, price: u256
@@ -333,6 +342,66 @@ mod BorrowerOperations {
     fn _requireCallerIsStabilityPool(self: @ContractState) {
         assert(msg.sender == stabilityPoolAddress, "BorrowerOps: Caller is not Stability Pool");
     }
+
+    fn main() {}
+
+
+    fn _updateTroveFromAdjustment(
+        _troveManager: ITroveManager,
+        _borrower: ContractAddress,
+        _collChange: u256,
+        _isCollIncrease: bool,
+        _debtChange: u256,
+        _isDebtIncrease: bool
+    ) -> (u256, u256) {
+        newColl: u256 = if _isCollIncrease {
+            _troveManager.increaseTroveColl(_borrower, _collChange)
+        } else {
+            _troveManager.decreaseTroveColl(_borrower, _collChange)
+        };
+        newDebt: u256 = if _isDebtIncrease {
+            _troveManager.increaseTroveDebt(_borrower, _debtChange)
+        } else {
+            _troveManager.decreaseTroveDebt(_borrower, _debtChange)
+        };
+        (newColl, newDebt)
+    }
+
+
+    fn _moveTokensAndETHfromAdjustment(
+        _activePool: IActivePool,
+        _lusdToken: ILUSDToken,
+        _borrower: ContractAddress,
+        _collChange: u256,
+        _isCollIncrease: bool,
+        _LUSDChange: u256,
+        _isDebtIncrease: bool,
+        _netDebtChange: u256
+    ) {
+        if (_isDebtIncrease) {
+            _withdrawLUSD(_activePool, _lusdToken, _borrower, _LUSDChange, _netDebtChange);
+        } else {
+            _repayLUSD(_activePool, _lusdToken, _borrower, _LUSDChange);
+        }
+
+        if (_isCollIncrease) {
+            _activePoolAddColl(_activePool, _collChange);
+        } else {
+            _activePool.sendETH(_borrower, _collChange);
+        }
+    }
+
+    #[external(v0)]
+    fn moveETHGainToTrove(borrower ContractAddress, upperHint ContractAddress, lowerHint ContractAddress) {
+        _requireCallerIsStabilityPool();
+        _adjustTrove(borrower, 0, 0, false, upperHint, lowerHint, 0);
+    }
+
+    #[external(v0)]
+    fn addColl(upperHint ContractAddress, lowerHint ContractAddress) {
+        _adjustTrove(msg.sender, 0, 0, false, upperHint, lowerHint, 0);
+    }
+
 
     fn main() {}
 }
