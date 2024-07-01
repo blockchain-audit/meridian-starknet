@@ -1,8 +1,9 @@
-#[starknet::interface]
-use openzeppelin::token::erc20::{IERC20};
 use starknet::ContractAddress;
-trait IPool {
-    // Functions
+use openzeppelin::token::erc20::{IERC20};
+
+#[starknet::interface]
+trait ILQTYToken {
+    // Functions 
     #[external]
     fn getETH() -> felt252;
     #[external]
@@ -12,8 +13,11 @@ trait IPool {
     #[external]
     fn decreaseLUSDDebt(amount: felt252);
 }
-//Events
-
+#[event]
+#[derive(Drop, starknet::Event)]
+enum Event {
+    StoredName: StoredName,
+}
 #[event]
 #[derive(Drop, starknet::Event)]
 enum Event {
@@ -21,7 +25,6 @@ enum Event {
     LUSDBalanceUpdated: LUSDBalanceUpdated,
     ActivePoolAddressChanged: ActivePoolAddressChanged,
     DefaultPoolAddressChanged: DefaultPoolAddressChanged,
-    StabilityPoolAddressChanged: StabilityPoolAddressChanged,
     EtherSent: EtherSent,
 }
 #[derive(Drop, starknet::Event)]
@@ -49,4 +52,3 @@ struct EtherSent {
     _toAddress: felt252,
     amount: felt252,
 }
-
