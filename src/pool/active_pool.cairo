@@ -77,15 +77,15 @@
 //         return LUSDDebt;
 //     }
 
-//     function sendETH(address _account, uint256 _amount) external override {
-//         _requireCallerIsBOorTroveMorSP();
-//         ETH = ETH.sub(_amount);
-//         emit ActivePoolETHBalanceUpdated(ETH);
-//         emit EtherSent(_account, _amount);
+    function sendSTARK(address _account, uint256 _amount) external override {
+        _requireCallerIsBOorTroveMorSP();
+        ETH = ETH.sub(_amount);
+        emit ActivePoolETHBalanceUpdated(ETH);
+        emit EtherSent(_account, _amount);
 
-//         (bool success,) = _account.call{value: _amount}("");
-//         require(success, "ActivePool: sending ETH failed");
-//     }
+        (bool success,) = _account.call{value: _amount}("");
+        require(success, "ActivePool: sending ETH failed");
+    }
 
 //     function increaseLUSDDebt(uint256 _amount) external override {
 //         _requireCallerIsBOorTroveM();

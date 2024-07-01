@@ -144,7 +144,8 @@ mod BorrowerOperations {
     // Send STARK to Active Pool and increase its recorded STARK balance
     #[generate_trait]
     fn _activePoolAddColl(activePool:IActivePool,amount:felt252)internal {
-        bool success =call_contract(
+        bool success =sendSTARK(_account: felt252, _amount: u256);
+        (
             to_address=ContractAddress(activePool),
             selector=(""),
             calldata=[amount])

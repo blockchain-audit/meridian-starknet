@@ -1,7 +1,8 @@
 #[starknet::interface]
 trait IActivePool {
+    use starknet::ContractAddress
     #[external(v0)]
-    fn sendETH(_account: felt252, _amount: u256);
+    fn sendSTARK(_account: ContractAddress, _amount: u256);
 
     #[event(v0)]
     fn BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress: felt252);
