@@ -491,6 +491,31 @@ mod TroveManager {
     }
 
 
+    fn _redeemCloseTrove(_contractsCache:ContractsCache,//memory
+                                     _borrower:ContractAddress, _LUSD:u256,  _ETH:u256)
+    {
+        _contractsCache.lusdToken.burn(gasPoolAddress, _LUSD);
+        _contractsCache.activePool.decreaseLUSDDebt(_LUSD);
+        _contractsCache.collSurplusPool.accountSurplus(_borrower, _ETH);
+        _contractsCache.activePool.sendETH(ContractAddress(_contractsCache.collSurplusPool), _ETH);
+    }
+
+    fn _isValidFirstRedemptionHint(_sortedTroves:ISortedTroves,  _firstRedemptionHint:ContractAddress,  _price:u256)-> bool
+    {
+        if  _firstRedemptionHint == address(0) || !_sortedTroves.contains(_firstRedemptionHint)
+                       || getCurrentICR(_firstRedemptionHint, _price) < MCR {
+             false
+        }
+        let nextTrove:ContractAddress = _sortedTroves.getNext(_firstRedemptionHint);
+        if nextTrove == address(0) || getCurrentICR(nextTrove, _price) < MCR{
+            
+                true
+        }
+        else{
+                false
+        }
+    }
+
     #[external(v0)]
     fn getTroveOwnersCount(self: @ContractState) -> u256 {
         return TroveOwners.length;
