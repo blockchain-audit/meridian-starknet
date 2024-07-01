@@ -19,12 +19,14 @@ secured algorithmically.
 * [starknet-by-example](https://starknet-by-example.voyager.online/starknet-by-example.html)
 * [starknet-book](https://book.starknet.io/title-page.html)
 * [cairo-lang](https://www.cairo-lang.org/resources/#libraries) - cairo libraries and resources
+* [open-zeppelin-component-tutorial](https://docs.openzeppelin.com/contracts-cairo/0.14.0/components) - important tutorial!
 
 ### Tooling
 
 * [scarb](https://docs.swmansion.com/scarb/docs.html) - scarb docs
 * [starknet-foundry-book](https://foundry-rs.github.io/starknet-foundry/getting-started/first-steps.html) - use foundry on starknet, a tool that you already know in solidity.
 * [starknet-foundry](https://github.com/foundry-rs/starknet-foundry) - foundry repo
+* [openzeppelin-wizard](https://docs.openzeppelin.com/contracts-cairo/0.14.0/wizard)
 
 ### Libraries
 
