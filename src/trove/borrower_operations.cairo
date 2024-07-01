@@ -354,12 +354,12 @@ mod BorrowerOperations {
         _debtChange: u256,
         _isDebtIncrease: bool
     ) -> (u256, u256) {
-        newColl: u256 = if _isCollIncrease {
+        let mut newColl: u256 = if _isCollIncrease {
             _troveManager.increaseTroveColl(_borrower, _collChange)
         } else {
             _troveManager.decreaseTroveColl(_borrower, _collChange)
         };
-        newDebt: u256 = if _isDebtIncrease {
+        let mut newDebt: u256 = if _isDebtIncrease {
             _troveManager.increaseTroveDebt(_borrower, _debtChange)
         } else {
             _troveManager.decreaseTroveDebt(_borrower, _debtChange)
@@ -390,19 +390,7 @@ mod BorrowerOperations {
             _activePool.sendETH(_borrower, _collChange);
         }
     }
-
-    #[external(v0)]
-    fn moveETHGainToTrove(borrower ContractAddress, upperHint ContractAddress, lowerHint ContractAddress) {
-        _requireCallerIsStabilityPool();
-        _adjustTrove(borrower, 0, 0, false, upperHint, lowerHint, 0);
-    }
-
-    #[external(v0)]
-    fn addColl(upperHint ContractAddress, lowerHint ContractAddress) {
-        _adjustTrove(msg.sender, 0, 0, false, upperHint, lowerHint, 0);
-    }
-
-
+    
     fn main() {}
 }
 
