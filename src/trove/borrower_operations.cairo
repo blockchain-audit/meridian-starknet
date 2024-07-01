@@ -184,13 +184,13 @@ mod BorrowerOperations {
     }
 
     #[view]
-    fn _requireTroveisActive(self: @ContractState, troveManager ITroveManager,  borrower ContractAddress )   {
+    fn _requireTroveisActive(self: @ContractState, troveManager: ITroveManager,  borrower: ContractAddress )   {
         status: u256 = troveManager.getTroveStatus(borrower);
         assert(status == 1, "BorrowerOps: Trove does not exist or is closed");
     }
 
     #[view]
-    function _requireTroveisNotActive(self: @ContractState,  troveManager ITroveManager,  borrower ContractAddress)   {
+    function _requireTroveisNotActive(self: @ContractState,  troveManager: ITroveManager,  borrower: ContractAddress)   {
         status:u256 = troveManager.getTroveStatus(borrower);
         assert(status != 1, "BorrowerOps: Trove is active");
     }
@@ -301,7 +301,7 @@ mod BorrowerOperations {
             }
     }
 
-    fn _requireValidMaxFeePercentage(const maxFeePercentage :u256, const isRecoveryMode bool) {
+    fn _requireValidMaxFeePercentage(const maxFeePercentage :u256, const isRecoveryMode: bool) {
         if isRecoveryMode {
             assert(maxFeePercentage <= DECIMAL_PRECISION, "Max fee percentage must less than or equal to 100%");
         } else {
@@ -312,7 +312,7 @@ mod BorrowerOperations {
         }
     }
     #[view]
-    fn _requireSufficientLUSDBalance( self: @ContractState, lusdToken ILUSDToken, borrower ContractAddress,  debtRepayment :u256) {
+    fn _requireSufficientLUSDBalance( self: @ContractState, lusdToken: ILUSDToken, borrower: ContractAddress,  debtRepayment :u256) {
         assert(
             lusdToken.balanceOf(borrower) >= debtRepayment,
             "BorrowerOps: Caller doesnt have enough LUSD to make repayment"
@@ -325,13 +325,13 @@ mod BorrowerOperations {
     }
 
     #[external(v0)]
-    fn moveETHGainToTrove(borrower ContractAddress, upperHint ContractAddress, lowerHint ContractAddress) {
+    fn moveETHGainToTrove(borrower: ContractAddress, upperHint: ContractAddress, lowerHint: ContractAddress) {
         _requireCallerIsStabilityPool();
         _adjustTrove(borrower, 0, 0, false, upperHint, lowerHint, 0);
     }
 
     #[external(v0)]
-    fn addColl(upperHint ContractAddress, lowerHint ContractAddress) {
+    fn addColl(upperHint: ContractAddress, lowerHint: ContractAddress) {
         _adjustTrove(msg.sender, 0, 0, false, upperHint, lowerHint, 0);
     }
 
