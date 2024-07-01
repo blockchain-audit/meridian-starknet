@@ -39,121 +39,121 @@ mod TroveManager {
     }
     #[derive(Drop, starknet::Event)]
     struct BorrowerOperationsAddressChanged {
-     _newBorrowerOperationsAddress: ContractAddress,
+        _newBorrowerOperationsAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct PriceFeedAddressChanged {
-     _newPriceFeedAddress: ContractAddress,
+        _newPriceFeedAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct LUSDTokenAddressChanged {
-     _newLUSDTokenAddress: ContractAddress,
+        _newLUSDTokenAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct ActivePoolAddressChanged {
-     _activePoolAddress: ContractAddress,
+        _activePoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct DefaultPoolAddressChanged {
-     _defaultPoolAddress: ContractAddress,
+        _defaultPoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct StabilityPoolAddressChanged {
-     _stabilityPoolAddress: ContractAddress,
+        _stabilityPoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct GasPoolAddressChanged {
-     _gasPoolAddress: ContractAddress,
+        _gasPoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct CollSurplusPoolAddressChanged {
-     _collSurplusPoolAddress: ContractAddress,
+        _collSurplusPoolAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct SortedTrovesAddressChanged {
-     _sortedTrovesAddress: ContractAddress,
+        _sortedTrovesAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct LQTYTokenAddressChanged {
-     _lqtyTokenAddress: ContractAddress,
+        _lqtyTokenAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct LQTYStakingAddressChanged {
-     _lqtyStakingAddress: ContractAddress,
+        _lqtyStakingAddress: ContractAddress,
     }
     #[derive(Drop, starknet::Event)]
     struct Liquidation {
-     _liquidatedDebt: felt252,
-     _liquidatedColl: felt252,
-     _collGasCompensation: felt252,
-     _LUSDGasCompensation: felt252,
+        _liquidatedDebt: felt252,
+        _liquidatedColl: felt252,
+        _collGasCompensation: felt252,
+        _LUSDGasCompensation: felt252,
     }
     #[derive(Drop, starknet::Event)]
     struct Redemption {
-     _attemptedLUSDAmount: felt252,
-     _actualLUSDAmount: felt252,
-     _ETHSent: felt252,
-     _ETHFee: felt252,
+        _attemptedLUSDAmount: felt252,
+        _actualLUSDAmount: felt252,
+        _ETHSent: felt252,
+        _ETHFee: felt252,
     }
     #[derive(Drop, starknet::Event)]
     struct TroveUpdated {
-     #[key]
-     _borrower: ContractAddress,
-     _debt: felt252,
-     _coll: felt252,
-     _stake: felt252,
-     //check
-     _operation: TroveManagerOperation,
+        #[key]
+        _borrower: ContractAddress,
+        _debt: felt252,
+        _coll: felt252,
+        _stake: felt252,
+        //check
+        _operation: TroveManagerOperation,
     }
     #[derive(Drop, starknet::Event)]
     struct TroveLiquidated {
-     #[key]
-     _borrower: ContractAddress,
-     _debt: felt252,
-     _coll: felt252,
-     //check
-     _operation: TroveManagerOperation,
+        #[key]
+        _borrower: ContractAddress,
+        _debt: felt252,
+        _coll: felt252,
+        //check
+        _operation: TroveManagerOperation,
     }
     #[derive(Drop, starknet::Event)]
     struct BaseRateUpdated {
-     _baseRate: felt252,
+        _baseRate: felt252,
     }
     #[derive(Drop, starknet::Event)]
     struct LastFeeOpTimeUpdated {
-     _lastFeeOpTime: felt252,
+        _lastFeeOpTime: felt252,
     }
     #[derive(Drop, starknet::Event)]
     struct TotalStakesUpdated {
-     _newTotalStakes: felt252,
+        _newTotalStakes: felt252,
     }
     #[derive(Drop, starknet::Event)]
     struct SystemSnapshotsUpdated {
-     _totalStakesSnapshot: felt252,
-     _totalCollateralSnapshot: felt252,
+        _totalStakesSnapshot: felt252,
+        _totalCollateralSnapshot: felt252,
     }
     #[derive(Drop, starknet::Event)]
     struct LTermsUpdated {
-     _L_ETH: felt252,
-     _L_LUSDDebt: felt252,
+        _L_ETH: felt252,
+        _L_LUSDDebt: felt252,
     }
     #[derive(Drop, starknet::Event)]
     //אותם משתנים רק שם האירוע שונה 
     struct TroveSnapshotsUpdated {
-     _L_ETH: felt252,
-     _L_LUSDDebt: felt252,
+        _L_ETH: felt252,
+        _L_LUSDDebt: felt252,
     }
     #[derive(Drop, starknet::Event)]
     struct TroveIndexUpdated {
-     _borrower: ContractAddress,
-     _newIndex: felt252,
+        _borrower: ContractAddress,
+        _newIndex: felt252,
     }
     ///Structs
     #[storage]
     struct Trove {
-     debt: felt252,
-     coll: felt252,
-     arrayIndex: felt252,
-     stake: felt252,
+        debt: felt252,
+        coll: felt252,
+        arrayIndex: felt252,
+        stake: felt252,
     //צריך לבדוק ססטוס 
     // Status status;
     }
@@ -173,53 +173,53 @@ mod TroveManager {
     }
     #[storage]
     struct LocalVariables_InnerSingleLiquidateFunction {
-     collToLiquidate: felt252,
-     pendingDebtReward: felt252,
-     pendingCollReward: felt252,
+        collToLiquidate: felt252,
+        pendingDebtReward: felt252,
+        pendingCollReward: felt252,
     }
     #[storage]
     struct LocalVariables_LiquidationSequence {
-     remainingLUSDInStabPool: felt252,
-     i: felt252,
-     ICR: felt252,
-     userAddress: ContractAddress,
-     backToNormalMode: bool,
-     entireSystemDebt: felt252,
-     entireSystemColl: felt252,
+        remainingLUSDInStabPool: felt252,
+        i: felt252,
+        ICR: felt252,
+        userAddress: ContractAddress,
+        backToNormalMode: bool,
+        entireSystemDebt: felt252,
+        entireSystemColl: felt252,
     }
     #[storage]
-   struct LiquidationValues {
-     entireTroveDebt: felt252,
-     entireTroveColl: felt252,
-     collGasCompensation: felt252,
-     LUSDGasCompensation: felt252,
-     debtToOffset: felt252,
-     collToSendToSP: felt252,
-     debtToRedistribute: felt252,
-     collToRedistribute: felt252,
-     collSurplus: felt252,
+    struct LiquidationValues {
+        entireTroveDebt: felt252,
+        entireTroveColl: felt252,
+        collGasCompensation: felt252,
+        LUSDGasCompensation: felt252,
+        debtToOffset: felt252,
+        collToSendToSP: felt252,
+        debtToRedistribute: felt252,
+        collToRedistribute: felt252,
+        collSurplus: felt252,
     }
     #[storage]
     struct LiquidationTotals {
-     totalCollInSequence: felt252,
-     totalDebtInSequence: felt252,
-     totalCollGasCompensation: felt252,
-     totalLUSDGasCompensation: felt252,
-     totalDebtToOffset: felt252,
-     totalCollToSendToSP: felt252,
-     totalDebtToRedistribute: felt252,
-     totalCollToRedistribute: felt252,
-     totalCollSurplus: felt252,
+        totalCollInSequence: felt252,
+        totalDebtInSequence: felt252,
+        totalCollGasCompensation: felt252,
+        totalLUSDGasCompensation: felt252,
+        totalDebtToOffset: felt252,
+        totalCollToSendToSP: felt252,
+        totalDebtToRedistribute: felt252,
+        totalCollToRedistribute: felt252,
+        totalCollSurplus: felt252,
     }
     #[storage]
-   struct ContractsCache {
-     activePool: IActivePool,
-     defaultPool: IDefaultPool,
-     lusdToken: ILUSDToken,
-     lqtyStaking: ILQTYStaking,
-     sortedTroves: ISortedTroves,
-     collSurplusPool: ICollSurplusPool,
-     gasPoolAddress: ContractAddress,
+    struct ContractsCache {
+        activePool: IActivePool,
+        defaultPool: IDefaultPool,
+        lusdToken: ILUSDToken,
+        lqtyStaking: ILQTYStaking,
+        sortedTroves: ISortedTroves,
+        collSurplusPool: ICollSurplusPool,
+        gasPoolAddress: ContractAddress,
     }
     #[storage]
     struct RedemptionTotals {
@@ -295,13 +295,6 @@ mod TroveManager {
 
     fn renounce_ownership() {}
 
-
-    #[abi(embed_v0)]
-      impl TroveManager of super::ITroveManager<ContractState> 
-      {
-       
-       
-    
     fn _addLiquidationValuesToTotals(
         oldTotals: LiquidationTotals, singleLiquidation: LiquidationValues
     ) -> LiquidationTotals {
@@ -581,10 +574,4 @@ mod TroveManager {
         return TroveOwners[index];
     }
 }
-
-
-
-
-
-
 
