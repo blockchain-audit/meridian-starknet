@@ -1,3 +1,5 @@
+use starknet:: ContractAddress;
+
 #[starknet::interface]
 trait ILPTokenWrapper<TContractState> {
     fn totalSupply(self: @TContractState) -> u256;
