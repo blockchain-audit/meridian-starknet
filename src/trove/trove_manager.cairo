@@ -1,17 +1,18 @@
+// %lang starknet
+
 #[starknet::contract]
-use array::ArrayTrait;
-use starknet::ContractAddress;
-use starknet::syscalls::storage_read;
-use starknet::syscalls::storage_write;
 mod TroveManager {
-    #[event]
-    #[derive(Drop, starknet::Event)]
-    enum TroveManagerOperation {
-        applyPendingRewards: applyPendingRewards,
-        liquidateInNormalMode: liquidateInNormalMode,
-        liquidateInRecoveryMode: liquidateInRecoveryMode,
-        redeemCollateral: redeemCollateral,
-    }
+    use debug::PrintTrait;
+    use starknet::ContractAddress;
+    use super::{IActivePool, IDefaultPool, IPriceFeed};
+    use super::{stabilityPool};
+    use utils::safeMath;
+    use array::ArrayTrait;
+    use starknet::syscalls::storage_read;
+    use starknet::syscalls::storage_write;
+    // import StructTroveManager as structs_trove
+    //we need to connect this smart contract to safeMath contract 
+
     enum Event {
         BorrowerOperationsAddressChanged: BorrowerOperationsAddressChanged,
         PriceFeedAddressChanged: PriceFeedAddressChanged,
@@ -159,7 +160,7 @@ mod TroveManager {
     //   Object containing the ETH and LUSD snapshots for a given active trove
     #[storage]
     struct RewardSnapshot {
-        ETH: felt252,
+        STARK: felt252,
         LUSDDebt: felt252,
     }
     #[storage]
@@ -224,9 +225,9 @@ mod TroveManager {
     struct RedemptionTotals {
         remainingLUSD: felt252,
         totalLUSDToRedeem: felt252,
-        totalETHDrawn: felt252,
-        ETHFee: felt252,
-        ETHToSendToRedeemer: felt252,
+        totalSTARKDrawn: felt252,
+        STARKFee: felt252,
+        STARKToSendToRedeemer: felt252,
         decayedBaseRate: felt252,
         price: felt252,
         totalLUSDSupplyAtStart: felt252,
@@ -234,7 +235,7 @@ mod TroveManager {
     #[storage]
     struct SingleRedemptionValues {
         LUSDLot: felt252,
-        ETHLot: felt252,
+        STARKLot: felt252,
         cancelledPartial: bool,
     }
 
@@ -280,6 +281,109 @@ mod TroveManager {
         storage_write(borrower, 0);
     }
 
+    fn batchLiquidateTroves(mut troveArray: ContractAddress) {
+        assert(troveArray.length == 0, 'error, Calldata address array must not be empty');
+        let mut activePoolCached: IActivePool = structs_trove.ContractsCache.activePool;
+        let mut defaultPoolCached: IDefaultPool = structs_trove.ContractsCache.defaultPool;
+        let mut priceFeed = IPriceFeed;
+        //הממשק  לא מובן למה צריך לדרוס מתנה מטיפוס  
+        //מבצע את כל 
+        let mut stabilityPoolCached = stabilityPool;
+        let mut vars = structs_trove.LocalVariables_OuterLiquidationFunction;
+        let mut totals = structs_trove.LiquidationTotals;
+        vars.price = priceFeed.fetchPrice();
+        //מחזיר את total LUSD
+        vars.LUSDInStabPool = stabilityPoolCached.getTotalLUSDDeposits();
+        //who is function _checkRecoveryMode 
+        vars.recoveryModeAtStart = _checkRecoveryMode(vars.price);
+        if vars.recoveryModeAtStart {
+            totals =
+                getTotalFromBatchLiquidate_RecoveryMode(
+                    activePoolCached, defaultPoolCached, vars.price, vars.LUSDInStabPool, troveArray
+                );
+        } else {
+            totals =
+                getTotalsFromBatchLiquidate_NormalMode(
+                    activePoolCached, defaultPoolCached, vars.price, vars.LUSDInStabPool, troveArray
+                );
+        }
+        assert(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
+        stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
+        redistributeDebtAndColl(
+            activePoolCached,
+            defaultPoolCached,
+            totals.totalDebtToRedistribute,
+            totals.totalCollToRedistribute
+        );
+        if (totals.totalCollSurplus > 0) {
+            activePoolCached.sendSTARK(ContractAddress(collSurplusPool), totals.totalCollSurplus);
+        }
+        // Update system snapshots
+        updateSystemSnapshots_excludeCollRemainder(
+            activePoolCached, totals.totalCollGasCompensation
+        );
+        vars.liquidatedDebt = totals.totalDebtInSequence;
+        vars
+            .liquidatedColl = totals
+            .totalCollInSequence
+            .sub(totals.totalCollGasCompensation)
+            .sub(totals.totalCollSurplus);
+        emit
+        Liquidation(
+            vars.liquidatedDebt,
+            vars.liquidatedColl,
+            totals.totalCollGasCompensation,
+            totals.totalLUSDGasCompensation
+        );
+        self
+            .emit(
+                Liquidation {
+                    _liquidatedDebt: vars.liquidatedDebt,
+                    _liquidatedColl: vars.liquidatedColl,
+                    _LUSDGasCompensation: totals.totalLUSDGasCompensation
+                }
+            );
+        // {_liquidatedDebt: felt252,
+        // _liquidatedColl:felt252,
+        // _collGasCompensation:felt252,
+        // _LUSDGasCompensation:felt252,}
+        // Send gas compensation to caller
+        sendGasCompensation(
+            activePoolCached,
+            msg.sender,
+            totals.totalLUSDGasCompensation,
+            totals.totalCollGasCompensation
+        );
+    }
+    fn getTotalFromBatchLiquidate_RecoveryMode(
+        activePool: IActivePool,
+        defaultPool: IDefaultPool,
+        price: felt252,
+        LUSDInStabPool: felt252,
+        mut troveArray: ContractAddress
+    ) -> LiquidationTotals {}
+
+    fn getTotalsFromBatchLiquidate_NormalMode(
+        activePool: IActivePool,
+        defaultPool: IDefaultPool,
+        price: felt252,
+        LUSDInStabPool: felt252,
+        mut troveArray: ContractAddress
+    ) -> LiquidationTotals {}
+
+    fn redistributeDebtAndColl(
+        activePool: IActivePool, defaultPool: IDefaultPool, debt: felt252, coll: felt252
+    ) {}
+
+    fn sendGasCompensation() {}
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum TroveManagerOperation {
+        applyPendingRewards: applyPendingRewards,
+        liquidateInNormalMode: liquidateInNormalMode,
+        liquidateInRecoveryMode: liquidateInRecoveryMode,
+        redeemCollateral: redeemCollateral,
+    }
     fn _getTotalsFromLiquidateTrovesSequence_RecoveryMode(
         _contractsCache: ContractsCache //memory
         ,
@@ -367,3 +471,4 @@ mod TroveManager {
         return TroveOwners[index];
     }
 }
+
