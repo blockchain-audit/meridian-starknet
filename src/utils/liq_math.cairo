@@ -4,7 +4,7 @@
 
 mod LiquityMath {
     const DECIMAL_PRECISION: u256 = 1000000000000000000; // = 1e18
-    const NICR_PRECISION: u256 = 1000000000000000000; // = e1e20
+    const NICR_PRECISION:    u256 = 1000000000000000000; // = e1e20
 
     #[generate_trait]
     fn main() {

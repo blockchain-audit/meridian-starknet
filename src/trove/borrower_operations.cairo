@@ -300,7 +300,7 @@ mod BorrowerOperations {
                 _requireNewTCRisAboveCCR(vars.newTCR);
             }
     }
-
+    #[view]
     fn _requireValidMaxFeePercentage(const maxFeePercentage :u256, const isRecoveryMode bool) {
         if isRecoveryMode {
             assert(maxFeePercentage <= DECIMAL_PRECISION, "Max fee percentage must less than or equal to 100%");
